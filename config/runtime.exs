@@ -1,6 +1,9 @@
 import Config
 
-config :delivery_map, google_maps_api_key: System.get_env("GOOGLE_PLACES_API_KEY")
+google_places_api_key = System.get_env("GOOGLE_PLACES_API_KEY") ||
+  raise "environment variable GOOGLE_PLACES_API_KEY is missing. Please set it before starting the application."
+
+config :delivery_map, google_maps_api_key: google_places_api_key
 
 # config/runtime.exs is executed for all environments, including
 # during releases. It is executed after compilation and before the
