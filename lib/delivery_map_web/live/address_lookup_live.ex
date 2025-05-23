@@ -30,7 +30,7 @@ defmodule DeliveryMapWeb.AddressLookupLive do
   end
 
   @impl true
-  def handle_event("noop", %{"query" => query}, socket) do
+  def handle_event("submit", %{"query" => query}, socket) do
     suggestions =
       if String.length(query) > 2 do
         GooglePlaces.autocomplete(query)
@@ -75,7 +75,7 @@ defmodule DeliveryMapWeb.AddressLookupLive.GooglePlaces do
           %{description: pred["description"], place_id: pred["place_id"]}
         end)
 
-      _ ->
+      something_else ->
         []
     end
   end
@@ -93,8 +93,11 @@ defmodule DeliveryMapWeb.AddressLookupLive.GooglePlaces do
     url = "#{@details_url}?#{params}"
 
     case Req.get(url) do
-      {:ok, %{body: %{"result" => %{"formatted_address" => addr}}}} -> addr
-      _ -> nil
+      {:ok, %{body: %{"result" => %{"formatted_address" => addr} = result}}} ->
+        dbg(result)
+addr 
+      _ ->
+        nil
     end
   end
 end
