@@ -1,3 +1,4 @@
+/// <reference types="google.maps" />
 // Google Maps LiveView Hook for DeliveryMap
 
 export interface GoogleMapHookElement extends HTMLElement {
