@@ -47,4 +47,4 @@ liveSocket.connect()
 // >> liveSocket.enableDebug()
 // >> liveSocket.enableLatencySim(1000)  // enabled for duration of browser session
 // >> liveSocket.disableLatencySim()
-(window as any).liveSocket = liveSocket;
+window.liveSocket = liveSocket;
