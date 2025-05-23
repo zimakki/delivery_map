@@ -22,8 +22,7 @@ defmodule DeliveryMap.Accounts.User.Senders.SendMagicLinkEmail do
       end
 
     new()
-    # TODO: Replace with your email
-    |> from({"noreply", "noreply@example.com"})
+    |> from({"noreply", "zimakki@gmail.com"})
     |> to(to_string(email))
     |> subject("Your login link")
     |> html_body(body(token: token, email: email))

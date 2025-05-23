@@ -75,7 +75,7 @@ defmodule DeliveryMapWeb.AddressLookupLive.GooglePlaces do
           %{description: pred["description"], place_id: pred["place_id"]}
         end)
 
-      something_else ->
+      _something_else ->
         []
     end
   end
@@ -93,9 +93,9 @@ defmodule DeliveryMapWeb.AddressLookupLive.GooglePlaces do
     url = "#{@details_url}?#{params}"
 
     case Req.get(url) do
-      {:ok, %{body: %{"result" => %{"formatted_address" => addr} = result}}} ->
-        dbg(result)
-addr 
+      {:ok, %{body: %{"result" => %{"formatted_address" => addr}}}} ->
+        addr
+
       _ ->
         nil
     end
