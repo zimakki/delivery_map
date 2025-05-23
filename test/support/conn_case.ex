@@ -19,15 +19,15 @@ defmodule DeliveryMapWeb.ConnCase do
 
   using do
     quote do
+      use DeliveryMapWeb, :verified_routes
+
+      import DeliveryMapWeb.ConnCase
+      import Phoenix.ConnTest
+      import Plug.Conn
       # The default endpoint for testing
       @endpoint DeliveryMapWeb.Endpoint
 
-      use DeliveryMapWeb, :verified_routes
-
       # Import conveniences for testing with connections
-      import Plug.Conn
-      import Phoenix.ConnTest
-      import DeliveryMapWeb.ConnCase
     end
   end
 

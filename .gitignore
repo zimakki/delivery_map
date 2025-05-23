@@ -35,3 +35,4 @@ delivery_map-*.tar
 npm-debug.log
 /assets/node_modules/
 
+.env

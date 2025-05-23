@@ -1,4 +1,5 @@
 defmodule DeliveryMap.Accounts.User do
+  @moduledoc false
   use Ash.Resource,
     otp_app: :delivery_map,
     domain: DeliveryMap.Accounts,

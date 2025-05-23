@@ -1,0 +1,51 @@
+<div class="address-lookup">
+  <form phx-change="suggest" phx-submit="submit" autocomplete="off">
+    <input
+      type="text"
+      name="query"
+      value={@query}
+      placeholder="Search for an address..."
+      phx-debounce="400"
+      autocomplete="off"
+      class="input"
+    />
+  </form>
+
+  <%= if @suggestions != [] do %>
+    <ul class="suggestions">
+      <%= for suggestion <- @suggestions do %>
+        <li>
+          <button
+            type="button"
+            phx-click="select_address"
+            phx-value-place_id={suggestion.place_id}
+          >
+            {suggestion.description}
+          </button>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <%= if @selected_address do %>
+    <div class="selected-address">
+      <h3>Selected Address:</h3>
+      <ul>
+        <li><strong>Address:</strong> {@selected_address.address}</li>
+        <li><strong>Latitude:</strong> {@selected_address.lat}</li>
+        <li><strong>Longitude:</strong> {@selected_address.lng}</li>
+      </ul>
+    </div>
+  <% end %>
+</div>
+
+<style>
+  .address-lookup { max-width: 500px; margin: 2rem auto; }
+  .input { width: 100%; padding: 0.5rem; font-size: 1.1rem; }
+  .suggestions { list-style: none; padding: 0; margin: 0.5rem 0; border: 1px solid #ccc; border-radius: 4px; background: #fff; }
+  .suggestions li { border-bottom: 1px solid #eee; }
+  .suggestions li:last-child { border-bottom: none; }
+  .suggestions button { width: 100%; text-align: left; background: none; border: none; padding: 0.5rem; font-size: 1rem; cursor: pointer; }
+  .suggestions button:hover { background: #f0f0f0; }
+  .selected-address { margin-top: 1.5rem; padding: 1rem; background: #f7f7fa; border-radius: 4px; border: 1px solid #e0e0e0; }
+</style>
