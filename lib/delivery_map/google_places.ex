@@ -8,11 +8,7 @@ defmodule DeliveryMap.GooglePlaces do
   def autocomplete(query) do
     key = Application.get_env(:delivery_map, :google_maps_api_key) || "YOUR_API_KEY"
 
-    params =
-      URI.encode_query(%{
-        input: query,
-        key: key
-      })
+    params = URI.encode_query(%{input: query, key: key})
 
     url = "#{@autocomplete_url}?#{params}"
 
@@ -22,7 +18,7 @@ defmodule DeliveryMap.GooglePlaces do
           %{description: pred["description"], place_id: pred["place_id"]}
         end)
 
-      _something_else ->
+      _ ->
         []
     end
   end
@@ -30,12 +26,7 @@ defmodule DeliveryMap.GooglePlaces do
   def get_address(place_id) do
     key = Application.get_env(:delivery_map, :google_maps_api_key) || "YOUR_API_KEY"
 
-    params =
-      URI.encode_query(%{
-        place_id: place_id,
-        key: key,
-        fields: "formatted_address"
-      })
+    params = URI.encode_query(%{place_id: place_id, key: key, fields: "formatted_address"})
 
     url = "#{@details_url}?#{params}"
 
