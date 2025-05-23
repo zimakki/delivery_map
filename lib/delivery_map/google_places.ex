@@ -26,14 +26,17 @@ defmodule DeliveryMap.GooglePlaces do
   def get_address(place_id) do
     key = Application.get_env(:delivery_map, :google_maps_api_key) || "YOUR_API_KEY"
 
-    params = URI.encode_query(%{place_id: place_id, key: key, fields: "formatted_address"})
+    params = URI.encode_query(%{
+      place_id: place_id,
+      key: key,
+      fields: "formatted_address,geometry"
+    })
 
     url = "#{@details_url}?#{params}"
 
     case Req.get(url) do
-      {:ok, %{body: %{"result" => %{"formatted_address" => addr}}}} ->
-        addr
-
+      {:ok, %{body: %{"result" => %{"formatted_address" => addr, "geometry" => %{"location" => %{"lat" => lat, "lng" => lng}}}}}} ->
+        %{address: addr, lat: lat, lng: lng}
       _ ->
         nil
     end
