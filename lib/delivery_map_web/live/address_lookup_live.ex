@@ -44,6 +44,6 @@ defmodule DeliveryMapWeb.AddressLookupLive do
   @impl true
   def handle_event("select_address", %{"place_id" => place_id}, socket) do
     address = GooglePlaces.get_address(place_id)
-    {:noreply, assign(socket, selected_address: address, suggestions: [], query: address)}
+    {:noreply, assign(socket, selected_address: address, suggestions: [], query: address && address.address)}
   end
 end

@@ -30,7 +30,11 @@
   <%= if @selected_address do %>
     <div class="selected-address">
       <h3>Selected Address:</h3>
-      <p>{@selected_address}</p>
+      <ul>
+        <li><strong>Address:</strong> {@selected_address.address}</li>
+        <li><strong>Latitude:</strong> {@selected_address.lat}</li>
+        <li><strong>Longitude:</strong> {@selected_address.lng}</li>
+      </ul>
     </div>
   <% end %>
 </div>
