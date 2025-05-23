@@ -10,7 +10,7 @@ type NullableNumber = number | null | undefined;
 
 type GoogleMapHook = {
   map?: google.maps.Map;
-  marker?: google.maps.Marker;
+  marker?: google.maps.marker.AdvancedMarkerElement;
   el: GoogleMapHookElement;
   handleMap(): void;
   renderMap(lat: NullableNumber, lng: NullableNumber): void;
@@ -37,7 +37,7 @@ export const GoogleMap: Partial<GoogleMapHook> = {
       if (!(window as any)._googleMapsLoading) {
         (window as any)._googleMapsLoading = true;
         const script = document.createElement('script');
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${(window as any).GOOGLE_MAPS_API_KEY}`;
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${(window as any).GOOGLE_MAPS_API_KEY}&libraries=marker`;
         script.async = true;
         script.onload = () => this.renderMap(lat, lng);
         document.head.appendChild(script);
@@ -49,7 +49,8 @@ export const GoogleMap: Partial<GoogleMapHook> = {
       if (!this.map) {
         this.map = new window.google.maps.Map(this.el, {
           center: { lat: 0, lng: 0 },
-          zoom: 2
+          zoom: 2,
+          mapId: '562979e6b1924bed501ab419'
         });
       } else {
         this.map.setCenter({ lat: 0, lng: 0 });
@@ -73,7 +74,8 @@ export const GoogleMap: Partial<GoogleMapHook> = {
     if (!this.map) {
       this.map = new window.google.maps.Map(this.el, {
         center: hasCoords ? { lat, lng } : { lat: 0, lng: 0 },
-        zoom: hasCoords ? 16 : 2
+        zoom: hasCoords ? 16 : 2,
+        mapId: 'YOUR_MAP_ID_HERE' // <-- Replace with your actual Map ID
       });
     } else {
       this.map.setCenter(hasCoords ? { lat, lng } : { lat: 0, lng: 0 });
@@ -83,16 +85,16 @@ export const GoogleMap: Partial<GoogleMapHook> = {
     // Only show marker if valid coordinates
     if (hasCoords) {
       if (!this.marker) {
-        this.marker = new window.google.maps.Marker({
-          position: { lat, lng },
-          map: this.map
+        this.marker = new window.google.maps.marker.AdvancedMarkerElement({
+          map: this.map,
+          position: { lat, lng }
         });
       } else {
-        this.marker.setPosition({ lat, lng });
-        this.marker.setMap(this.map);
+        this.marker.position = { lat, lng };
+        this.marker.map = this.map;
       }
     } else if (this.marker) {
-      this.marker.setMap(null);
+      this.marker.map = null;
       this.marker = undefined;
     }
   }
