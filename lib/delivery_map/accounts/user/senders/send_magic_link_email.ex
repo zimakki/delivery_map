@@ -7,6 +7,7 @@ defmodule DeliveryMap.Accounts.User.Senders.SendMagicLinkEmail do
   use DeliveryMapWeb, :verified_routes
 
   import Swoosh.Email
+
   alias DeliveryMap.Mailer
 
   @impl true

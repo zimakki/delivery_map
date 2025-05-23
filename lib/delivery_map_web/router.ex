@@ -1,9 +1,11 @@
 defmodule DeliveryMapWeb.Router do
   use DeliveryMapWeb, :router
-
   use AshAuthentication.Phoenix.Router
 
   import AshAuthentication.Plug.Helpers
+
+  alias AshAuthentication.Phoenix.Overrides.Default
+  alias DeliveryMap.Accounts.User
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -42,7 +44,7 @@ defmodule DeliveryMapWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
-    auth_routes AuthController, DeliveryMap.Accounts.User, path: "/auth"
+    auth_routes AuthController, User, path: "/auth"
     sign_out_route AuthController
 
     # Remove these if you'd like to use your own authentication views
@@ -52,26 +54,28 @@ defmodule DeliveryMapWeb.Router do
                   on_mount: [{DeliveryMapWeb.LiveUserAuth, :live_no_user}],
                   overrides: [
                     DeliveryMapWeb.AuthOverrides,
-                    AshAuthentication.Phoenix.Overrides.Default
+                    Default
                   ]
 
     # Remove this if you do not want to use the reset password feature
     reset_route auth_routes_prefix: "/auth",
                 overrides: [
                   DeliveryMapWeb.AuthOverrides,
-                  AshAuthentication.Phoenix.Overrides.Default
+                  Default
                 ]
 
     # Remove this if you do not use the confirmation strategy
-    confirm_route DeliveryMap.Accounts.User, :confirm_new_user,
+    confirm_route User, :confirm_new_user,
       auth_routes_prefix: "/auth",
-      overrides: [DeliveryMapWeb.AuthOverrides, AshAuthentication.Phoenix.Overrides.Default]
+      overrides: [DeliveryMapWeb.AuthOverrides, Default]
 
     # Remove this if you do not use the magic link strategy.
-    magic_sign_in_route(DeliveryMap.Accounts.User, :magic_link,
+    magic_sign_in_route(User, :magic_link,
       auth_routes_prefix: "/auth",
-      overrides: [DeliveryMapWeb.AuthOverrides, AshAuthentication.Phoenix.Overrides.Default]
+      overrides: [DeliveryMapWeb.AuthOverrides, Default]
     )
+
+    live "/address-lookup", AddressLookupLive
   end
 
   # Other scopes may use custom stacks.
