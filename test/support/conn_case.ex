@@ -20,6 +20,7 @@ defmodule DeliveryMapWeb.ConnCase do
   using do
     quote do
       use DeliveryMapWeb, :verified_routes
+
       import DeliveryMapWeb.ConnCase
       import Phoenix.ConnTest
       import Plug.Conn
