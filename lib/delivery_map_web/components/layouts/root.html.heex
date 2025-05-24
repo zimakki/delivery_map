@@ -10,10 +10,12 @@
       {assigns[:page_title]}
     </.live_title>
     <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
-    <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
-    </script>
+    <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}></script>
   </head>
   <body class="bg-white">
     {@inner_content}
-  </body>
+    <script>
+    window.GOOGLE_MAPS_API_KEY = "<%= Application.get_env(:delivery_map, :google_maps_js_api_key) %>";
+  </script>
+</body>
 </html>

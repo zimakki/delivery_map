@@ -37,6 +37,15 @@
       </ul>
     </div>
   <% end %>
+
+  <div
+    id="map"
+    phx-hook="GoogleMap"
+    phx-update="ignore"
+    style="height: 400px; width: 100%; margin-top: 1rem;"
+    data-lat={@selected_address && @selected_address.lat}
+    data-lng={@selected_address && @selected_address.lng}
+  ></div>
 </div>
 
 <style>
