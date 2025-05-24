@@ -14,6 +14,8 @@ defmodule DeliveryMap.Application do
       {Phoenix.PubSub, name: DeliveryMap.PubSub},
       # Start the Finch HTTP client for sending emails
       {Finch, name: DeliveryMap.Finch},
+      # live-react
+      {NodeJS.Supervisor, [path: LiveReact.SSR.NodeJS.server_path(), pool_size: 4]},
       # Start a worker by calling: DeliveryMap.Worker.start_link(arg)
       # {DeliveryMap.Worker, arg},
       # Start to serve requests, typically the last entry

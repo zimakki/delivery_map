@@ -10,7 +10,8 @@ module.exports = {
     "../deps/ash_authentication_phoenix/**/*.*ex",
     "./js/**/*.js",
     "../lib/delivery_map_web.ex",
-    "../lib/delivery_map_web/**/*.*ex"
+    "../lib/delivery_map_web/**/*.*ex",
+    "./react-components/**/*.tsx"
   ],
   theme: {
     extend: {

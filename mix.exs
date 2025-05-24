@@ -53,8 +53,6 @@ defmodule DeliveryMap.MixProject do
       {:phoenix_live_view, "~> 1.0"},
       {:floki, ">= 0.30.0", only: :test},
       {:phoenix_live_dashboard, "~> 0.8.3"},
-      {:esbuild, "~> 0.8", runtime: Mix.env() == :dev},
-      {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev},
       {:heroicons,
        github: "tailwindlabs/heroicons", tag: "v2.1.1", sparse: "optimized", app: false, compile: false, depth: 1},
       {:swoosh, "~> 1.5"},
@@ -67,7 +65,9 @@ defmodule DeliveryMap.MixProject do
       {:bandit, "~> 1.5"},
       {:req, "~> 0.4"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:styler, "~> 1.4.2", only: [:dev, :test], runtime: false}
+      {:styler, "~> 1.4.2", only: [:dev, :test], runtime: false},
+      {:live_react, "~> 1.0.1"},
+      {:nodejs, "~> 3.1.2"}
     ]
   end
 
@@ -83,11 +83,11 @@ defmodule DeliveryMap.MixProject do
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ash.setup --quiet", "test"],
-      "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
-      "assets.build": ["tailwind delivery_map", "esbuild delivery_map"],
+      "assets.setup": ["cmd --cd assets npm install"],
+      "assets.build": ["cmd --cd assets npm run build", "cmd --cd assets npm run build-server"],
       "assets.deploy": [
-        "tailwind delivery_map --minify",
-        "esbuild delivery_map --minify",
+        "cmd --cd assets npm run build",
+        "cmd --cd assets npm run build-server",
         "phx.digest"
       ],
       "phx.routes": ["phx.routes", "ash_authentication.phoenix.routes"]

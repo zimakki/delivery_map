@@ -95,6 +95,9 @@ defmodule DeliveryMapWeb do
       # Shortcut for generating JS commands
       alias Phoenix.LiveView.JS
 
+      # live-react
+      import LiveReact
+
       # Routes generation with the ~p sigil
       unquote(verified_routes())
     end

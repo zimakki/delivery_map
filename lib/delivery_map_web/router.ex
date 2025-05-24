@@ -76,6 +76,7 @@ defmodule DeliveryMapWeb.Router do
     )
 
     live "/address-lookup", AddressLookupLive
+    live "/react", ReactLive
   end
 
   # Other scopes may use custom stacks.

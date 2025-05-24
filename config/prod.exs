@@ -18,3 +18,8 @@ config :swoosh, api_client: Swoosh.ApiClient.Finch, finch_name: DeliveryMap.Finc
 # Disable Swoosh Local Memory Storage
 # of environment variables, is done on config/runtime.exs.
 config :swoosh, local: false
+
+# live-react
+config :live_react,
+  ssr_module: LiveReact.SSR.NodeJS,
+  ssr: true
