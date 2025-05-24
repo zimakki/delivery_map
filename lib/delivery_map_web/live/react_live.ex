@@ -9,6 +9,14 @@ defmodule DeliveryMapWeb.ReactLive do
   def render(assigns) do
     ~H"""
     <.react name="Simple" />
+    <.react
+      name="GoogleMap"
+      SSR={false}
+      lat={51.5074}
+      lng={-0.1278}
+      mapId="562979e6b1924bed501ab419"
+      zoom={14}
+    />
     """
   end
 end
