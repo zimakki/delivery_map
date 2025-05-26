@@ -129,6 +129,15 @@ defmodule DeliveryMapWeb.AddressLookupLive do
         >
           Select
         </button>
+        <a
+          href={"https://www.google.com/maps/dir/?api=1&destination=" <> to_string(@address.lat) <> "," <> to_string(@address.lng)}
+          target="_blank"
+          rel="noopener noreferrer"
+          title="Navigate to this address in Google Maps"
+          class="px-3 py-1 rounded bg-green-500 hover:bg-green-600 text-white font-medium text-sm mb-1 text-center"
+        >
+          Navigate
+        </a>
         <div class="relative">
           <button
             type="button"
