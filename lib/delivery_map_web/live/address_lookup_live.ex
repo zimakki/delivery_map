@@ -115,9 +115,9 @@ defmodule DeliveryMapWeb.AddressLookupLive do
     ~H"""
     <div class="flex items-start justify-between bg-white border border-gray-200 rounded-lg shadow-sm p-5 hover:shadow-md transition-shadow">
       <div class="flex-1 space-y-1 text-base">
-        <div><span class="font-bold">Address:</span> {@address.address}</div>
-        <div><span class="font-bold">Latitude:</span> {@address.lat}</div>
-        <div><span class="font-bold">Longitude:</span> {@address.lng}</div>
+        <%= for {key, value} <- Map.to_list(@address) do %>
+          <div><span class="font-bold"><%= key %>:</span> <%= value %></div>
+        <% end %>
       </div>
       <div class="flex flex-col gap-2 ml-6">
         <button
