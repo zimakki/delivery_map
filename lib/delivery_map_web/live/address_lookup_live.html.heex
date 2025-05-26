@@ -1,5 +1,5 @@
 <div class="address-lookup">
-  <form phx-change="suggest" phx-submit="submit" autocomplete="off">
+  <form phx-change="suggest" phx-submit="submit" autocomplete="off" class="relative flex items-center">
     <input
       type="text"
       name="query"
@@ -7,8 +7,16 @@
       placeholder="Search for an address..."
       phx-debounce="400"
       autocomplete="off"
-      class="input w-full"
+      class="input w-full pr-10"
     />
+    <%= if @query != "" do %>
+      <button type="button" phx-click="clear_query" class="absolute right-2 flex items-center h-full text-gray-400 hover:text-gray-700 focus:outline-none">
+        <!-- X icon SVG -->
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    <% end %>
   </form>
 
   <%= if @suggestions != [] do %>

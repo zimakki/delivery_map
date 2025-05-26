@@ -84,6 +84,11 @@ defmodule DeliveryMapWeb.AddressLookupLive do
   end
 
   @impl true
+  def handle_event("clear_query", _params, socket) do
+    {:noreply, assign(socket, query: "", suggestions: [])}
+  end
+
+  @impl true
   def handle_event("map_add_address", %{"lat" => lat, "lng" => lng}, socket) do
     # Use reverse geocoding to get the address string
     address_str = DeliveryMap.GooglePlaces.reverse_geocode(lat, lng) || "(Unknown address)"
