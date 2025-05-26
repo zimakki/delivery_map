@@ -44,6 +44,8 @@
     phx-update="ignore"
     style="height: 400px; width: 100%; margin-top: 1rem;"
     data-addresses={Jason.encode!(@addresses)}
+    data-selected-lat={@selected_address && @selected_address.lat}
+    data-selected-lng={@selected_address && @selected_address.lng}
   >
   </div>
 </div>

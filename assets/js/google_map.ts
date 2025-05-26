@@ -87,5 +87,17 @@ export const GoogleMap: Partial<GoogleMapHook> = {
         this.markers.push(marker);
       }
     });
+
+    // Center map on selected address if provided
+    const selectedLat = this.el.dataset.selectedLat;
+    const selectedLng = this.el.dataset.selectedLng;
+    if (this.map && selectedLat && selectedLng) {
+      const lat = Number(selectedLat);
+      const lng = Number(selectedLng);
+      if (!isNaN(lat) && !isNaN(lng)) {
+        this.map.setCenter({ lat, lng });
+        // Do NOT change zoom
+      }
+    }
   }
 };

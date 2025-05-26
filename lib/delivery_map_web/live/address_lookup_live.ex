@@ -72,16 +72,35 @@ defmodule DeliveryMapWeb.AddressLookupLive do
         <div><span class="font-bold">Latitude:</span> {@address.lat}</div>
         <div><span class="font-bold">Longitude:</span> {@address.lng}</div>
       </div>
-      <button
-        type="button"
-        phx-click="delete_address"
-        phx-value-idx={@index}
-        title="Remove address"
-        class="ml-6 text-red-600 hover:text-red-800 text-2xl font-bold leading-none focus:outline-none"
-      >
-        ✕
-      </button>
+      <div class="flex flex-col gap-2 ml-6">
+        <button
+          type="button"
+          phx-click="center_address"
+          phx-value-idx={@index}
+          title="Center map on this address"
+          class="px-3 py-1 rounded bg-blue-500 hover:bg-blue-600 text-white font-medium text-sm mb-1"
+        >
+          Select
+        </button>
+        <button
+          type="button"
+          phx-click="delete_address"
+          phx-value-idx={@index}
+          title="Remove address"
+          class="text-red-600 hover:text-red-800 text-2xl font-bold leading-none focus:outline-none"
+        >
+          ✕
+        </button>
+      </div>
     </div>
     """
+  end
+
+  @impl true
+  def handle_event("center_address", %{"idx" => idx_str}, socket) do
+    idx = String.to_integer(idx_str)
+    addresses = socket.assigns.addresses || []
+    address = Enum.at(addresses, idx)
+    {:noreply, assign(socket, selected_address: address)}
   end
 end
