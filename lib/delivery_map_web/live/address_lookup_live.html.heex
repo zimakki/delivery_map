@@ -28,17 +28,17 @@
   <% end %>
 
   <%= if @addresses != [] do %>
-    <div class="selected-address">
-      <h3>Saved Addresses:</h3>
-      <div class="addresses-list">
+    <div class="bg-gray-50 rounded-lg border border-gray-200 mt-6 p-6">
+      <h3 class="text-xl font-semibold mb-4">Saved Addresses:</h3>
+      <div class="flex flex-col gap-5">
         <%= for {addr, idx} <- Enum.with_index(@addresses) do %>
-          <div class="address-card">
-            <div class="address-info">
-              <div><strong>Address:</strong> <%= addr.address %></div>
-              <div><strong>Latitude:</strong> <%= addr.lat %></div>
-              <div><strong>Longitude:</strong> <%= addr.lng %></div>
+          <div class="flex items-start justify-between bg-white border border-gray-200 rounded-lg shadow-sm p-5 hover:shadow-md transition-shadow">
+            <div class="flex-1 space-y-1 text-base">
+              <div><span class="font-bold">Address:</span> <%= addr.address %></div>
+              <div><span class="font-bold">Latitude:</span> <%= addr.lat %></div>
+              <div><span class="font-bold">Longitude:</span> <%= addr.lng %></div>
             </div>
-            <button type="button" phx-click="delete_address" phx-value-idx={idx} class="delete-btn" title="Remove address">✕</button>
+            <button type="button" phx-click="delete_address" phx-value-idx={idx} title="Remove address" class="ml-6 text-red-600 hover:text-red-800 text-2xl font-bold leading-none focus:outline-none">✕</button>
           </div>
         <% end %>
       </div>
@@ -54,51 +54,3 @@
   ></div>
 </div>
 
-<style>
-  .address-lookup { max-width: 500px; margin: 2rem auto; }
-  .input { width: 100%; padding: 0.5rem; font-size: 1.1rem; }
-  .suggestions { list-style: none; padding: 0; margin: 0.5rem 0; border: 1px solid #ccc; border-radius: 4px; background: #fff; }
-  .suggestions li { border-bottom: 1px solid #eee; }
-  .suggestions li:last-child { border-bottom: none; }
-  .suggestions button { width: 100%; text-align: left; background: none; border: none; padding: 0.5rem; font-size: 1rem; cursor: pointer; }
-  .suggestions button:hover { background: #f0f0f0; }
-  .selected-address { margin-top: 1.5rem; padding: 1rem; background: #f7f7fa; border-radius: 4px; border: 1px solid #e0e0e0; }
-  .addresses-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1.2rem;
-    margin-top: 1rem;
-  }
-  .address-card {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: #fff;
-    border: 1px solid #e0e0e0;
-    border-radius: 6px;
-    padding: 1rem 1.2rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
-    transition: box-shadow 0.2s;
-  }
-  .address-card:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.07);
-  }
-  .address-info {
-    flex: 1;
-    line-height: 1.7;
-    font-size: 1.05rem;
-  }
-  .delete-btn {
-    margin-left: 1.5rem;
-    color: #c00;
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    transition: color 0.2s;
-    align-self: flex-start;
-  }
-  .delete-btn:hover {
-    color: #900;
-  }
-</style>
