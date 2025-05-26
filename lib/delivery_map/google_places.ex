@@ -41,4 +41,19 @@ defmodule DeliveryMap.GooglePlaces do
         nil
     end
   end
+
+  def reverse_geocode(lat, lng) do
+    key = Application.get_env(:delivery_map, :google_maps_api_key) || "YOUR_API_KEY"
+    params = URI.encode_query(%{
+      latlng: "#{lat},#{lng}",
+      key: key
+    })
+    url = "https://maps.googleapis.com/maps/api/geocode/json?#{params}"
+    case Req.get(url) do
+      {:ok, %{body: %{"results" => [%{"formatted_address" => addr} | _]}}} ->
+        addr
+      _ ->
+        nil
+    end
+  end
 end
