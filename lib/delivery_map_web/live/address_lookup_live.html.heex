@@ -27,13 +27,18 @@
     </ul>
   <% end %>
 
-  <%= if @selected_address do %>
+  <%= if @addresses != [] do %>
     <div class="selected-address">
-      <h3>Selected Address:</h3>
+      <h3>Saved Addresses:</h3>
       <ul>
-        <li><strong>Address:</strong> {@selected_address.address}</li>
-        <li><strong>Latitude:</strong> {@selected_address.lat}</li>
-        <li><strong>Longitude:</strong> {@selected_address.lng}</li>
+        <%= for {addr, idx} <- Enum.with_index(@addresses) do %>
+          <li>
+            <strong>Address:</strong> <%= addr.address %> <br/>
+            <strong>Latitude:</strong> <%= addr.lat %> <br/>
+            <strong>Longitude:</strong> <%= addr.lng %>
+            <button type="button" phx-click="delete_address" phx-value-idx={idx} style="margin-left:1em;color:#c00;background:none;border:none;cursor:pointer;">✕</button>
+          </li>
+        <% end %>
       </ul>
     </div>
   <% end %>
@@ -43,8 +48,7 @@
     phx-hook="GoogleMap"
     phx-update="ignore"
     style="height: 400px; width: 100%; margin-top: 1rem;"
-    data-lat={@selected_address && @selected_address.lat}
-    data-lng={@selected_address && @selected_address.lng}
+    data-addresses={Jason.encode!(@addresses)}
   ></div>
 </div>
 
