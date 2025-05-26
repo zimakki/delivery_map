@@ -29,14 +29,26 @@ defmodule DeliveryMap.GooglePlaces do
     params = URI.encode_query(%{
       place_id: place_id,
       key: key,
-      fields: "formatted_address,geometry"
+      fields: "formatted_address,geometry,address_components"
     })
 
     url = "#{@details_url}?#{params}"
 
     case Req.get(url) do
-      {:ok, %{body: %{"result" => %{"formatted_address" => addr, "geometry" => %{"location" => %{"lat" => lat, "lng" => lng}}}}}} ->
-        %{address: addr, lat: lat, lng: lng}
+      {:ok, %{body: %{"result" => %{"formatted_address" => addr, "geometry" => %{"location" => %{"lat" => lat, "lng" => lng}}, "address_components" => comps}}}} ->
+        postcode =
+          comps
+          |> Enum.find(fn comp -> "postal_code" in comp["types"] end)
+          |> case do
+            nil -> nil
+            comp -> comp["long_name"]
+          end
+        # Flatten all address components into a map
+        address_parts =
+          for comp <- comps, type <- comp["types"], into: %{} do
+            {type, comp["long_name"]}
+          end
+        %{address: addr, lat: lat, lng: lng, postcode: postcode} |> Map.merge(address_parts)
       _ ->
         nil
     end
@@ -50,8 +62,19 @@ defmodule DeliveryMap.GooglePlaces do
     })
     url = "https://maps.googleapis.com/maps/api/geocode/json?#{params}"
     case Req.get(url) do
-      {:ok, %{body: %{"results" => [%{"formatted_address" => addr} | _]}}} ->
-        addr
+      {:ok, %{body: %{"results" => [%{"formatted_address" => addr, "address_components" => comps} | _]}}} ->
+        postcode =
+          comps
+          |> Enum.find(fn comp -> "postal_code" in comp["types"] end)
+          |> case do
+            nil -> nil
+            comp -> comp["long_name"]
+          end
+        address_parts =
+          for comp <- comps, type <- comp["types"], into: %{} do
+            {type, comp["long_name"]}
+          end
+        %{address: addr, postcode: postcode} |> Map.merge(address_parts)
       _ ->
         nil
     end
