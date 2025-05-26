@@ -22,6 +22,7 @@ export const GoogleMap: Partial<GoogleMapHook> = {
   mounted() {
     console.log("GoogleMap mounted");
     this.handleMap();
+
   },
   updated() {
     console.log("GoogleMap updated");
@@ -75,6 +76,18 @@ export const GoogleMap: Partial<GoogleMapHook> = {
         mapId: 'YOUR_MAP_ID_HERE', // <-- Replace with your actual Map ID
         gestureHandling: 'greedy'
       });
+      // Attach map click listener only once
+      if (!this._clickListenerAdded) {
+        this.map.addListener('click', (e: any) => {
+          if (this.pushEvent && e && e.latLng) {
+            this.pushEvent('map_add_address', {
+              lat: e.latLng.lat(),
+              lng: e.latLng.lng()
+            });
+          }
+        });
+        this._clickListenerAdded = true;
+      }
     }
     // On update, do NOT change center or zoom
 
