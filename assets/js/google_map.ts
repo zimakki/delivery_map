@@ -74,7 +74,11 @@ export const GoogleMap: Partial<GoogleMapHook> = {
         center,
         zoom,
         mapId: 'YOUR_MAP_ID_HERE', // <-- Replace with your actual Map ID
-        gestureHandling: 'greedy'
+        gestureHandling: 'greedy',
+        streetViewControl: false,
+        zoomControl: false,
+        mapTypeControl: false,
+        fullscreenControl: false
       });
       // Attach map click listener only once
       if (!this._clickListenerAdded) {
