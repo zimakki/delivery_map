@@ -62,6 +62,10 @@ export const GoogleMap: Partial<GoogleMapHook> = {
       const first = addresses[0];
       center = { lat: Number(first.lat), lng: Number(first.lng) };
       zoom = 12;
+    } else {
+      // Default to El Born, Barcelona
+      center = { lat: 41.3851, lng: 2.1801 };
+      zoom = 16;
     }
 
     if (!this.map) {
@@ -70,10 +74,8 @@ export const GoogleMap: Partial<GoogleMapHook> = {
         zoom,
         mapId: 'YOUR_MAP_ID_HERE' // <-- Replace with your actual Map ID
       });
-    } else {
-      this.map.setCenter(center);
-      this.map.setZoom(zoom);
     }
+    // On update, do NOT change center or zoom
 
     // Add markers for all addresses
     addresses.forEach(addr => {
