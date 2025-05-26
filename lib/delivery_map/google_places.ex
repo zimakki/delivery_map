@@ -63,7 +63,7 @@ defmodule DeliveryMap.GooglePlaces do
     })
     url = "https://maps.googleapis.com/maps/api/geocode/json?#{params}"
     case Req.get(url) do
-      {:ok, %{body: %{"results" => [%{"formatted_address" => addr, "address_components" => comps} | _]}}} ->
+      {:ok, %{body: %{"results" => [%{"formatted_address" => addr, "geometry" => %{"location" => %{"lat" => lat, "lng" => lng}}, "address_components" => comps} | _]}}} ->
         postcode =
           comps
           |> Enum.find(fn comp -> "postal_code" in comp["types"] end)
@@ -75,7 +75,18 @@ defmodule DeliveryMap.GooglePlaces do
           for comp <- comps, type <- comp["types"], into: %{} do
             {type, comp["long_name"]}
           end
-        %{address: addr, postcode: postcode} |> Map.merge(address_parts)
+        # Try to find a business or POI name
+        name =
+          comps
+          |> Enum.find_value(fn comp ->
+            if "point_of_interest" in comp["types"] or "establishment" in comp["types"] do
+              comp["long_name"]
+            else
+              nil
+            end
+          end)
+        %{name: name, address: addr, lat: lat, lng: lng, postcode: postcode}
+        |> Map.merge(address_parts)
       _ ->
         nil
     end

@@ -90,14 +90,10 @@ defmodule DeliveryMapWeb.AddressLookupLive do
 
   @impl true
   def handle_event("map_add_address", %{"lat" => lat, "lng" => lng}, socket) do
-    # Use reverse geocoding to get the address string
-    address_str = DeliveryMap.GooglePlaces.reverse_geocode(lat, lng) || "(Unknown address)"
-    address = %{
-      address: address_str,
-      lat: lat,
-      lng: lng,
-      icon: "red-pin"
-    }
+    # Use reverse geocoding to get the full address map
+    address_map = DeliveryMap.GooglePlaces.reverse_geocode(lat, lng) || %{}
+    # Merge in the icon field (and ensure lat/lng are present)
+    address = Map.merge(address_map, %{icon: "red-pin", lat: lat, lng: lng})
     addresses = (socket.assigns.addresses || []) ++ [address]
     {:noreply, assign(socket, addresses: addresses)}
   end
@@ -115,8 +111,10 @@ defmodule DeliveryMapWeb.AddressLookupLive do
     ~H"""
     <div class="flex items-start justify-between bg-white border border-gray-200 rounded-lg shadow-sm p-5 hover:shadow-md transition-shadow">
       <div class="flex-1 space-y-1 text-base">
-        <%= for {key, value} <- Map.to_list(@address) do %>
-          <div><span class="font-bold"><%= key %>:</span> <%= value %></div>
+        <%= for {key, value} <- Map.to_list(@address), is_binary(value) or is_number(value) do %>
+          <div>
+            <span class="font-bold"><%= key %>:</span> <%= value %>
+          </div>
         <% end %>
       </div>
       <div class="flex flex-col gap-2 ml-6">
