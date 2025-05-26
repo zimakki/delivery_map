@@ -13,6 +13,7 @@ defmodule DeliveryMapWeb.AddressLookupLive do
        query: "",
        suggestions: [],
        selected_address: nil,
+       addresses: [],
        loading: false
      )}
   end
@@ -44,6 +45,20 @@ defmodule DeliveryMapWeb.AddressLookupLive do
   @impl true
   def handle_event("select_address", %{"place_id" => place_id}, socket) do
     address = GooglePlaces.get_address(place_id)
-    {:noreply, assign(socket, selected_address: address, suggestions: [], query: address && address.address)}
+    addresses = (socket.assigns.addresses || []) ++ [address]
+    {:noreply, assign(socket,
+      selected_address: address,
+      addresses: addresses,
+      suggestions: [],
+      query: address && address.address
+    )}
+  end
+
+  @impl true
+  def handle_event("delete_address", %{"idx" => idx_str}, socket) do
+    idx = String.to_integer(idx_str)
+    addresses = socket.assigns.addresses || []
+    new_addresses = List.delete_at(addresses, idx)
+    {:noreply, assign(socket, addresses: new_addresses)}
   end
 end
