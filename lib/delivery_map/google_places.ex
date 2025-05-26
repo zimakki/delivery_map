@@ -29,13 +29,13 @@ defmodule DeliveryMap.GooglePlaces do
     params = URI.encode_query(%{
       place_id: place_id,
       key: key,
-      fields: "formatted_address,geometry,address_components"
+      fields: "formatted_address,geometry,address_components,name"
     })
 
     url = "#{@details_url}?#{params}"
 
     case Req.get(url) do
-      {:ok, %{body: %{"result" => %{"formatted_address" => addr, "geometry" => %{"location" => %{"lat" => lat, "lng" => lng}}, "address_components" => comps}}}} ->
+      {:ok, %{body: %{"result" => %{"name" => name, "formatted_address" => addr, "geometry" => %{"location" => %{"lat" => lat, "lng" => lng}}, "address_components" => comps}}}} ->
         postcode =
           comps
           |> Enum.find(fn comp -> "postal_code" in comp["types"] end)
@@ -48,7 +48,8 @@ defmodule DeliveryMap.GooglePlaces do
           for comp <- comps, type <- comp["types"], into: %{} do
             {type, comp["long_name"]}
           end
-        %{address: addr, lat: lat, lng: lng, postcode: postcode} |> Map.merge(address_parts)
+        %{name: name, address: addr, lat: lat, lng: lng, postcode: postcode}
+        |> Map.merge(address_parts)
       _ ->
         nil
     end
