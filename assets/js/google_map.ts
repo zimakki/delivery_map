@@ -10,10 +10,10 @@ type NullableNumber = number | null | undefined;
 
 type GoogleMapHook = {
   map?: google.maps.Map;
-  marker?: google.maps.marker.AdvancedMarkerElement;
+  markers?: google.maps.marker.AdvancedMarkerElement[];
   el: GoogleMapHookElement;
   handleMap(): void;
-  renderMap(lat: NullableNumber, lng: NullableNumber): void;
+  renderMap(addresses: any[]): void;
   mounted(): void;
   updated(): void;
 }
@@ -28,10 +28,13 @@ export const GoogleMap: Partial<GoogleMapHook> = {
     this.handleMap();
   },
   handleMap() {
-    const latStr = this.el.dataset.lat || this.el.getAttribute('data-lat') || this.el.__lat;
-    const lngStr = this.el.dataset.lng || this.el.getAttribute('data-lng') || this.el.__lng;
-    const lat = latStr ? Number(latStr) : undefined;
-    const lng = lngStr ? Number(lngStr) : undefined;
+    const addressesJson = this.el.dataset.addresses;
+    let addresses = [];
+    try {
+      addresses = addressesJson ? JSON.parse(addressesJson) : [];
+    } catch (e) {
+      addresses = [];
+    }
 
     if (!window.google || !window.google.maps) {
       if (!(window as any)._googleMapsLoading) {
@@ -39,63 +42,48 @@ export const GoogleMap: Partial<GoogleMapHook> = {
         const script = document.createElement('script');
         script.src = `https://maps.googleapis.com/maps/api/js?key=${(window as any).GOOGLE_MAPS_API_KEY}&libraries=marker`;
         script.async = true;
-        script.onload = () => this.renderMap(lat, lng);
+        script.onload = () => this.renderMap(addresses);
         document.head.appendChild(script);
       }
       return;
     }
-    // If no coordinates, show default map view and remove marker if exists
-    if (lat === undefined || lng === undefined || isNaN(lat) || isNaN(lng)) {
-      if (!this.map) {
-        this.map = new window.google.maps.Map(this.el, {
-          center: { lat: 0, lng: 0 },
-          zoom: 2,
-          mapId: '562979e6b1924bed501ab419'
-        });
-      } else {
-        this.map.setCenter({ lat: 0, lng: 0 });
-        this.map.setZoom(2);
-      }
-      if (this.marker) {
-        this.marker.setMap(null);
-        this.marker = undefined;
-      }
-      return;
-    }
-    // Save for re-use
-    this.el.__lat = latStr;
-    this.el.__lng = lngStr;
-    this.renderMap(lat, lng);
+    this.renderMap(addresses);
   },
-  renderMap(lat, lng) {
-    const isValidCoord = (v: NullableNumber): v is number => typeof v === "number" && isFinite(v);
-    const hasCoords = isValidCoord(lat) && isValidCoord(lng);
+  renderMap(addresses) {
+    // Remove old markers
+    if (this.markers && Array.isArray(this.markers)) {
+      this.markers.forEach(marker => marker.setMap(null));
+    }
+    this.markers = [];
+
+    let center = { lat: 0, lng: 0 };
+    let zoom = 2;
+    if (addresses.length > 0) {
+      const first = addresses[0];
+      center = { lat: Number(first.lat), lng: Number(first.lng) };
+      zoom = 12;
+    }
 
     if (!this.map) {
       this.map = new window.google.maps.Map(this.el, {
-        center: hasCoords ? { lat, lng } : { lat: 0, lng: 0 },
-        zoom: hasCoords ? 16 : 2,
+        center,
+        zoom,
         mapId: 'YOUR_MAP_ID_HERE' // <-- Replace with your actual Map ID
       });
     } else {
-      this.map.setCenter(hasCoords ? { lat, lng } : { lat: 0, lng: 0 });
-      this.map.setZoom(hasCoords ? 16 : 2);
+      this.map.setCenter(center);
+      this.map.setZoom(zoom);
     }
 
-    // Only show marker if valid coordinates
-    if (hasCoords) {
-      if (!this.marker) {
-        this.marker = new window.google.maps.marker.AdvancedMarkerElement({
+    // Add markers for all addresses
+    addresses.forEach(addr => {
+      if (addr.lat && addr.lng) {
+        const marker = new window.google.maps.marker.AdvancedMarkerElement({
           map: this.map,
-          position: { lat, lng }
+          position: { lat: Number(addr.lat), lng: Number(addr.lng) }
         });
-      } else {
-        this.marker.position = { lat, lng };
-        this.marker.map = this.map;
+        this.markers.push(marker);
       }
-    } else if (this.marker) {
-      this.marker.map = null;
-      this.marker = undefined;
-    }
+    });
   }
 };
