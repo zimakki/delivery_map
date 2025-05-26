@@ -83,6 +83,20 @@ defmodule DeliveryMapWeb.AddressLookupLive do
     {:noreply, assign(socket, selected_address: address)}
   end
 
+  @impl true
+  def handle_event("map_add_address", %{"lat" => lat, "lng" => lng}, socket) do
+    # Use reverse geocoding to get the address string
+    address_str = DeliveryMap.GooglePlaces.reverse_geocode(lat, lng) || "(Unknown address)"
+    address = %{
+      address: address_str,
+      lat: lat,
+      lng: lng,
+      icon: "red-pin"
+    }
+    addresses = (socket.assigns.addresses || []) ++ [address]
+    {:noreply, assign(socket, addresses: addresses)}
+  end
+
   defp address_card(assigns) do
     icon_picker_open = Map.get(assigns, :icon_picker_open, nil)
     icons = [
