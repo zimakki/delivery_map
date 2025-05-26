@@ -46,12 +46,14 @@ defmodule DeliveryMapWeb.AddressLookupLive do
   def handle_event("select_address", %{"place_id" => place_id}, socket) do
     address = GooglePlaces.get_address(place_id)
     addresses = (socket.assigns.addresses || []) ++ [address]
-    {:noreply, assign(socket,
-      selected_address: address,
-      addresses: addresses,
-      suggestions: [],
-      query: address && address.address
-    )}
+
+    {:noreply,
+     assign(socket,
+       selected_address: address,
+       addresses: addresses,
+       suggestions: [],
+       query: address && address.address
+     )}
   end
 
   @impl true
@@ -60,5 +62,26 @@ defmodule DeliveryMapWeb.AddressLookupLive do
     addresses = socket.assigns.addresses || []
     new_addresses = List.delete_at(addresses, idx)
     {:noreply, assign(socket, addresses: new_addresses)}
+  end
+
+  defp address_card(assigns) do
+    ~H"""
+    <div class="flex items-start justify-between bg-white border border-gray-200 rounded-lg shadow-sm p-5 hover:shadow-md transition-shadow">
+      <div class="flex-1 space-y-1 text-base">
+        <div><span class="font-bold">Address:</span> {@address.address}</div>
+        <div><span class="font-bold">Latitude:</span> {@address.lat}</div>
+        <div><span class="font-bold">Longitude:</span> {@address.lng}</div>
+      </div>
+      <button
+        type="button"
+        phx-click="delete_address"
+        phx-value-idx={@index}
+        title="Remove address"
+        class="ml-6 text-red-600 hover:text-red-800 text-2xl font-bold leading-none focus:outline-none"
+      >
+        ✕
+      </button>
+    </div>
+    """
   end
 end

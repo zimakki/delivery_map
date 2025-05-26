@@ -32,14 +32,7 @@
       <h3 class="text-xl font-semibold mb-4">Saved Addresses:</h3>
       <div class="flex flex-col gap-5">
         <%= for {addr, idx} <- Enum.with_index(@addresses) do %>
-          <div class="flex items-start justify-between bg-white border border-gray-200 rounded-lg shadow-sm p-5 hover:shadow-md transition-shadow">
-            <div class="flex-1 space-y-1 text-base">
-              <div><span class="font-bold">Address:</span> <%= addr.address %></div>
-              <div><span class="font-bold">Latitude:</span> <%= addr.lat %></div>
-              <div><span class="font-bold">Longitude:</span> <%= addr.lng %></div>
-            </div>
-            <button type="button" phx-click="delete_address" phx-value-idx={idx} title="Remove address" class="ml-6 text-red-600 hover:text-red-800 text-2xl font-bold leading-none focus:outline-none">✕</button>
-          </div>
+          <.address_card address={addr} index={idx} />
         <% end %>
       </div>
     </div>
@@ -51,6 +44,6 @@
     phx-update="ignore"
     style="height: 400px; width: 100%; margin-top: 1rem;"
     data-addresses={Jason.encode!(@addresses)}
-  ></div>
+  >
+  </div>
 </div>
-
