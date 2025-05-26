@@ -72,7 +72,8 @@ export const GoogleMap: Partial<GoogleMapHook> = {
       this.map = new window.google.maps.Map(this.el, {
         center,
         zoom,
-        mapId: 'YOUR_MAP_ID_HERE' // <-- Replace with your actual Map ID
+        mapId: 'YOUR_MAP_ID_HERE', // <-- Replace with your actual Map ID
+        gestureHandling: 'greedy'
       });
     }
     // On update, do NOT change center or zoom
