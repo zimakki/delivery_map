@@ -2,6 +2,7 @@ defmodule DeliveryMapWeb.AddressLookupLive.Components do
   @moduledoc false
   use Phoenix.Component
   use Gettext, backend: DeliveryMapWeb.Gettext
+  import DeliveryMapWeb.CoreComponents, only: [icon: 1, icon: 2]
 
   attr :address, :map, required: true, doc: "The address data to display"
   attr :index, :integer, default: 0, doc: "Index of the address in the list"
@@ -13,15 +14,11 @@ defmodule DeliveryMapWeb.AddressLookupLive.Components do
 
     assigns =
       Map.put_new(assigns, :icons, [
-        {"red-pin", "<svg width='24' height='24' viewBox='0 0 24 24' fill='red'><circle cx='12' cy='12' r='10'/></svg>"},
-        {"blue-pin",
-         "<svg width='24' height='24' viewBox='0 0 24 24' fill='blue'><circle cx='12' cy='12' r='10'/></svg>"},
-        {"green-pin",
-         "<svg width='24' height='24' viewBox='0 0 24 24' fill='green'><circle cx='12' cy='12' r='10'/></svg>"},
-        {"star",
-         "<svg width='24' height='24' viewBox='0 0 24 24' fill='gold'><polygon points='12,2 15,10 23,10 17,15 19,23 12,18 5,23 7,15 1,10 9,10'/></svg>"},
-        {"flag",
-         "<svg width='24' height='24' viewBox='0 0 24 24'><rect x='4' y='4' width='4' height='16' fill='gray'/><rect x='8' y='4' width='12' height='8' fill='red'/></svg>"}
+        {"red-pin", ~s|<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-red-500"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.5-7.5 11.25-7.5 11.25S4.5 18 4.5 10.5a7.5 7.5 0 1115 0z" /></svg>|},
+        {"blue-pin", ~s|<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-blue-500"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.5-7.5 11.25-7.5 11.25S4.5 18 4.5 10.5a7.5 7.5 0 1115 0z" /></svg>|},
+        {"green-pin", ~s|<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-green-500"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.5-7.5 11.25-7.5 11.25S4.5 18 4.5 10.5a7.5 7.5 0 1115 0z" /></svg>|},
+        {"star", ~s|<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-yellow-400"><path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.75.75 0 011.04 0l2.348 4.756 5.254.764a.75.75 0 01.416 1.279l-3.8 3.703.897 5.233a.75.75 0 01-1.088.791L12 17.347l-4.703 2.478a.75.75 0 01-1.088-.79l.897-5.234-3.8-3.703a.75.75 0 01.416-1.28l5.254-.763 2.348-4.756z" /></svg>|},
+        {"flag", ~s|<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-gray-600"><path stroke-linecap="round" stroke-linejoin="round" d="M3 21V5a1 1 0 011-1h13.382a1 1 0 01.894 1.447l-1.382 2.764a1 1 0 000 .894l1.382 2.764A1 1 0 0117.382 13H5a1 1 0 00-1 1v7z" /></svg>|}
       ])
 
     ~H"""
@@ -32,16 +29,7 @@ defmodule DeliveryMapWeb.AddressLookupLive.Components do
         phx-value-idx={@index}
         class="absolute top-2.5 right-2.5 text-gray-400 hover:text-red-600 p-1.5 rounded-full hover:bg-red-50 transition-colors duration-150 ease-in-out z-10"
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="2"
-          stroke="currentColor"
-          class="w-5 h-5"
-        >
-          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-        </svg>
+        <.icon name="hero-x-mark-solid" class="h-5 w-5" />
       </button>
 
       <div class="flex items-start space-x-3 mb-3">
@@ -94,20 +82,7 @@ defmodule DeliveryMapWeb.AddressLookupLive.Components do
           phx-value-idx={@index}
           class="text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 p-2 rounded-lg shadow-sm border border-blue-200 transition-all duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-            class="w-5 h-5"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
+          <.icon name="hero-check-circle-solid" class="h-5 w-5" />
         </button>
         <a
           aria-label="Navigate"
@@ -116,20 +91,7 @@ defmodule DeliveryMapWeb.AddressLookupLive.Components do
           rel="noopener noreferrer"
           class="text-gray-600 hover:text-gray-800 bg-gray-50 hover:bg-gray-100 p-2 rounded-lg shadow-sm border border-gray-200 transition-all duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-400"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-            class="w-5 h-5 transform -rotate-45"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"
-            />
-          </svg>
+          <.icon name="hero-arrow-top-right-on-square-solid" class="h-5 w-5 transform -rotate-45" />
         </a>
         <button
           aria-label="Change Icon"
@@ -137,20 +99,7 @@ defmodule DeliveryMapWeb.AddressLookupLive.Components do
           phx-value-idx={@index}
           class="text-gray-600 hover:text-gray-800 bg-gray-50 hover:bg-gray-100 p-2 rounded-lg shadow-sm border border-gray-200 transition-all duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-400"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-            class="w-5 h-5"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"
-            />
-          </svg>
+          <.icon name="hero-photo-solid" class="h-5 w-5" />
         </button>
         <%= if @icon_picker_open == @index do %>
           <div class="absolute z-10 bg-white border border-gray-300 rounded shadow-md mt-1 p-2 flex gap-2">
