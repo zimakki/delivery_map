@@ -7,9 +7,7 @@ defmodule DeliveryMap.GooglePlaces do
   @key Application.compile_env(:delivery_map, :google_maps_api_key) || "YOUR_API_KEY"
 
   def autocomplete(query) do
-    key = Application.get_env(:delivery_map, :google_maps_api_key) || "YOUR_API_KEY"
-
-    params = URI.encode_query(%{input: query, key: key})
+    params = URI.encode_query(%{input: query, key: @key})
 
     url = "#{@autocomplete_url}?#{params}"
 
@@ -30,7 +28,9 @@ defmodule DeliveryMap.GooglePlaces do
 
     url = "#{@details_url}?#{params}"
 
-    case Req.get(url) do
+    resp = Req.get(url)
+
+    case resp do
       {:ok,
        %{
          body: %{
