@@ -8,7 +8,14 @@ defmodule DeliveryMapWeb.AddressLookupLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, query: "", suggestions: [], addresses: [], selected_address: nil, icon_picker_open: nil)}
+    {:ok,
+     assign(socket,
+       query: "",
+       suggestions: [],
+       addresses: [],
+       selected_address: nil,
+       icon_picker_open: nil
+     )}
   end
 
   @impl true
@@ -100,12 +107,16 @@ defmodule DeliveryMapWeb.AddressLookupLive do
 
   defp address_card(assigns) do
     icon_picker_open = Map.get(assigns, :icon_picker_open, nil)
+
     icons = [
       {"red-pin", "<svg width='24' height='24' viewBox='0 0 24 24' fill='red'><circle cx='12' cy='12' r='10'/></svg>"},
       {"blue-pin", "<svg width='24' height='24' viewBox='0 0 24 24' fill='blue'><circle cx='12' cy='12' r='10'/></svg>"},
-      {"green-pin", "<svg width='24' height='24' viewBox='0 0 24 24' fill='green'><circle cx='12' cy='12' r='10'/></svg>"},
-      {"star", "<svg width='24' height='24' viewBox='0 0 24 24' fill='gold'><polygon points='12,2 15,10 23,10 17,15 19,23 12,18 5,23 7,15 1,10 9,10'/></svg>"},
-      {"flag", "<svg width='24' height='24' viewBox='0 0 24 24'><rect x='4' y='4' width='4' height='16' fill='gray'/><rect x='8' y='4' width='12' height='8' fill='red'/></svg>"}
+      {"green-pin",
+       "<svg width='24' height='24' viewBox='0 0 24 24' fill='green'><circle cx='12' cy='12' r='10'/></svg>"},
+      {"star",
+       "<svg width='24' height='24' viewBox='0 0 24 24' fill='gold'><polygon points='12,2 15,10 23,10 17,15 19,23 12,18 5,23 7,15 1,10 9,10'/></svg>"},
+      {"flag",
+       "<svg width='24' height='24' viewBox='0 0 24 24'><rect x='4' y='4' width='4' height='16' fill='gray'/><rect x='8' y='4' width='12' height='8' fill='red'/></svg>"}
     ]
 
     ~H"""
@@ -113,7 +124,7 @@ defmodule DeliveryMapWeb.AddressLookupLive do
       <div class="flex-1 space-y-1 text-base">
         <%= for {key, value} <- Map.to_list(@address), is_binary(value) or is_number(value) do %>
           <div>
-            <span class="font-bold"><%= key %>:</span> <%= value %>
+            <span class="font-bold">{key}:</span> {value}
           </div>
         <% end %>
       </div>
