@@ -29,27 +29,9 @@ import { GoogleMap } from "./google_map";
 const Hooks: { [key: string]: any } = {};
 Hooks.GoogleMap = GoogleMap;
 
-Hooks.VoiceSearch = {
-  mounted() {
-    const micBtn = this.el;
-    const input = document.getElementById("address-search");
-    let recognition;
-    if ('webkitSpeechRecognition' in window) {
-      recognition = new webkitSpeechRecognition();
-      recognition.lang = 'en-US';
-      recognition.onresult = function(event) {
-        if (event.results.length > 0) {
-          input.value = event.results[0][0].transcript;
-          input.dispatchEvent(new Event('input', { bubbles: true }));
-        }
-      };
-      micBtn.addEventListener('click', () => recognition.start());
-    } else {
-      micBtn.disabled = true;
-      micBtn.title = "Voice search not supported";
-    }
-  }
-};
+import VoiceSearch from "./voice_search";
+
+Hooks.VoiceSearch = VoiceSearch;
 
 const liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
