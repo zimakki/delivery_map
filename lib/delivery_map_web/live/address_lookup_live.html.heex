@@ -25,12 +25,14 @@
       class="relative flex items-center"
     >
       <input
+        id="address-search"
         type="text"
         name="query"
         value={@query}
         placeholder="Search for an address..."
         phx-debounce="400"
         autocomplete="off"
+        x-webkit-speech
         class="input w-full pr-10"
       />
       <%= if @query != "" do %>
@@ -55,6 +57,17 @@
           </svg>
         </button>
       <% end %>
+      <button
+        type="button"
+        id="mic-btn"
+        phx-hook="VoiceSearch"
+        aria-label="Voice search"
+        class="ml-2 text-gray-500 hover:text-blue-600 bg-transparent focus:outline-none"
+        tabindex="0"
+        style="background: none;"
+      >
+        🎤
+      </button>
     </form>
     
 <!-- Suggestions -->
