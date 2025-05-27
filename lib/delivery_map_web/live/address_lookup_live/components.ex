@@ -28,7 +28,7 @@ defmodule DeliveryMapWeb.AddressLookupLive.Components do
       ])
 
     ~H"""
-    <div class="bg-white rounded-xl p-3 relative mt-3 mr-3">
+    <div class="bg-white rounded-xl p-3 relative mt-3">
       <div class="flex items-start space-x-3 mb-3">
         <div class="flex-shrink-0 pt-1">
           <span class="w-3 h-3 bg-red-500 rounded-full block" aria-hidden="true"></span>
@@ -72,13 +72,13 @@ defmodule DeliveryMapWeb.AddressLookupLive.Components do
         </div>
       </div>
 
-      <div class="absolute top-2.5 -right-3 flex items-end space-x-2 -translate-y-1/2 z-20">
+      <div class="absolute top-2.5 right-3 flex items-end space-x-2 -translate-y-1/2 z-20">
         <.address_card_action_button
           type="button"
           aria_label="Select"
           phx_click="center_address"
           phx_value_idx={@index}
-          icon_name="hero-check-circle-solid"
+          icon_name="hero-arrows-pointing-in"
           icon_class="h-5 w-5"
           class="text-blue-600 hover:text-blue-700 border border-blue-200 focus:ring-blue-500 hover:bg-blue-50 transition-colors duration-150 ease-in-out z-10"
         />
@@ -97,8 +97,8 @@ defmodule DeliveryMapWeb.AddressLookupLive.Components do
           aria_label="Change Icon"
           phx_click="toggle_icon_picker"
           phx_value_idx={@index}
-          icon_name="hero-photo-solid"
-          icon_class="h-5 w-5"
+          icon_name="hero-pencil-square"
+          icon_class="size-6"
           class="text-yellow-700 hover:text-gray-800 border border-gray-200 focus:ring-gray-500 hover:bg-yellow-100 transition-colors duration-150 ease-in-out z-10"
         />
         <.address_card_action_button
@@ -156,7 +156,7 @@ defmodule DeliveryMapWeb.AddressLookupLive.Components do
         href={@href}
         target={@target}
         rel={@rel}
-        class={"flex items-center justify-center w-9 h-9 rounded-full bg-white shadow-sm transition-all duration-150 ease-in-out focus:outline-none " <> (@class || "")}
+        class={"flex items-center justify-center w-9 h-9 rounded-lg bg-white shadow-sm transition-all duration-150 ease-in-out focus:outline-none " <> (@class || "")}
       >
         <.icon name={@icon_name} class={@icon_class} />
       </a>
@@ -166,7 +166,7 @@ defmodule DeliveryMapWeb.AddressLookupLive.Components do
         aria-label={@aria_label}
         phx-click={@phx_click}
         phx-value-idx={@phx_value_idx}
-        class={"flex items-center justify-center w-9 h-9 rounded-full bg-white shadow-sm transition-all duration-150 ease-in-out focus:outline-none " <> (@class || "")}
+        class={"flex items-center justify-center w-9 h-9 rounded-lg bg-white shadow-sm transition-all duration-150 ease-in-out focus:outline-none " <> (@class || "")}
       >
         <.icon name={@icon_name} class={@icon_class} />
       </button>
