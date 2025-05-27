@@ -6,6 +6,7 @@
     phx-update="ignore"
     class="fixed inset-0 w-screen h-screen z-0"
     data-addresses={Jason.encode!(@addresses)}
+    data-preview-address={@preview_address && Jason.encode!(@preview_address)}
     data-selected-lat={@selected_address && @selected_address.lat}
     data-selected-lng={@selected_address && @selected_address.lng}
     style="background: #e5e7eb;"
@@ -88,84 +89,37 @@
       </ul>
     <% end %>
     
+<!-- Preview Address Card -->
+    <%= if @preview_address do %>
+      <div class="bg-blue-50 border border-blue-400 rounded-lg p-4 mb-4 flex flex-col gap-2 shadow">
+        <h3 class="text-lg font-semibold text-blue-700 mb-2">Preview Address</h3>
+        <div class="flex-1 space-y-1 text-base">
+          <%= for {key, value} <- Map.to_list(@preview_address), is_binary(value) or is_number(value) do %>
+            <div>
+              <span class="font-bold">{key}:</span> {value}
+            </div>
+          <% end %>
+        </div>
+        <div class="flex items-center gap-3 mt-2">
+          <button
+            type="button"
+            phx-click="save_preview_address"
+            class="px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white font-medium"
+          >
+            Save
+          </button>
+          <span class="text-blue-600 text-sm">This address is not saved yet.</span>
+        </div>
+      </div>
+    <% end %>
+    
 <!-- Saved Addresses -->
     <%= if @addresses != [] do %>
       <div class="bg-gray-50 rounded-lg border border-gray-200 p-4">
         <h3 class="text-lg font-semibold mb-2">Saved Addresses</h3>
         <div class="flex flex-col gap-4 max-h-60 overflow-y-auto">
           <%= for {addr, idx} <- Enum.with_index(@addresses) do %>
-            <div class="flex items-start justify-between bg-white border border-gray-200 rounded-lg shadow-sm p-3 hover:shadow-md transition-shadow">
-              <div class="flex-1 space-y-1 text-base">
-                <%= for {key, value} <- Map.to_list(addr), is_binary(value) or is_number(value) do %>
-                  <div>
-                    <span class="font-bold">{key}:</span> {value}
-                  </div>
-                <% end %>
-              </div>
-              <div class="flex flex-col gap-2 ml-6">
-                <button
-                  type="button"
-                  phx-click="center_address"
-                  phx-value-idx={idx}
-                  title="Center map on this address"
-                  class="px-3 py-1 rounded bg-blue-500 hover:bg-blue-600 text-white font-medium text-sm mb-1"
-                >
-                  Select
-                </button>
-                <a
-                  href={"https://www.google.com/maps/dir/?api=1&destination=" <> to_string(addr.lat) <> "," <> to_string(addr.lng)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  title="Navigate to this address in Google Maps"
-                  class="px-3 py-1 rounded bg-green-500 hover:bg-green-600 text-white font-medium text-sm mb-1 text-center"
-                >
-                  Navigate
-                </a>
-                <div class="relative">
-                  <button
-                    type="button"
-                    class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium text-sm mb-1"
-                    phx-click="toggle_icon_picker"
-                    phx-value-idx={idx}
-                    title="Change icon"
-                  >
-                    Icon
-                  </button>
-                  <%= if @icon_picker_open == idx do %>
-                    <div class="absolute z-20 bg-white border border-gray-300 rounded shadow-md mt-1 p-2 flex gap-2">
-                      <%= for {icon_key, svg} <- [
-          {"red-pin", "<svg width='24' height='24' viewBox='0 0 24 24' fill='red'><circle cx='12' cy='12' r='10'/></svg>"},
-          {"blue-pin", "<svg width='24' height='24' viewBox='0 0 24 24' fill='blue'><circle cx='12' cy='12' r='10'/></svg>"},
-          {"green-pin", "<svg width='24' height='24' viewBox='0 0 24 24' fill='green'><circle cx='12' cy='12' r='10'/></svg>"},
-          {"star", "<svg width='24' height='24' viewBox='0 0 24 24' fill='gold'><polygon points='12,2 15,10 23,10 17,15 19,23 12,18 5,23 7,15 1,10 9,10'/></svg>"},
-          {"flag", "<svg width='24' height='24' viewBox='0 0 24 24'><rect x='4' y='4' width='4' height='16' fill='gray'/><rect x='8' y='4' width='12' height='8' fill='red'/></svg>"}
-        ] do %>
-                        <button
-                          type="button"
-                          phx-click="change_icon"
-                          phx-value-idx={idx}
-                          phx-value-icon={icon_key}
-                          class={"p-1 border-2 rounded " <> if addr.icon == icon_key, do: "border-blue-500", else: "border-transparent"}
-                          title={icon_key}
-                          style="background: none;"
-                        >
-                          {Phoenix.HTML.raw(svg)}
-                        </button>
-                      <% end %>
-                    </div>
-                  <% end %>
-                </div>
-                <button
-                  type="button"
-                  phx-click="delete_address"
-                  phx-value-idx={idx}
-                  title="Remove address"
-                  class="text-red-600 hover:text-red-800 text-2xl font-bold leading-none focus:outline-none"
-                >
-                  ✕
-                </button>
-              </div>
-            </div>
+            {address_card(address: addr, index: idx, icon_picker_open: @icon_picker_open)}
           <% end %>
         </div>
       </div>

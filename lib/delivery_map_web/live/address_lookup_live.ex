@@ -14,7 +14,8 @@ defmodule DeliveryMapWeb.AddressLookupLive do
        suggestions: [],
        addresses: [],
        selected_address: nil,
-       icon_picker_open: nil
+       icon_picker_open: nil,
+       preview_address: nil
      )}
   end
 
@@ -43,18 +44,27 @@ defmodule DeliveryMapWeb.AddressLookupLive do
   end
 
   @impl true
-  def handle_event("select_address", %{"place_id" => place_id}, socket) do
+  def handle_event("select_address", %{"place_id" => place_id} = _params, socket) do
     address = GooglePlaces.get_address(place_id)
-    # Add a default icon to new addresses
-    address = Map.put(address, :icon, "red-pin")
-    addresses = (socket.assigns.addresses || []) ++ [address]
+    address = Map.put(address, :icon, "blue-pin")
 
     {:noreply,
      assign(socket,
+       preview_address: address,
        selected_address: address,
-       addresses: addresses,
        suggestions: [],
        query: address && address.address
+     )}
+  end
+
+  def handle_event("save_preview_address", _params, socket) do
+    preview_address = socket.assigns.preview_address
+    addresses = (socket.assigns.addresses || []) ++ [Map.put(preview_address, :icon, "red-pin")]
+
+    {:noreply,
+     assign(socket,
+       addresses: addresses,
+       preview_address: nil
      )}
   end
 
@@ -106,18 +116,21 @@ defmodule DeliveryMapWeb.AddressLookupLive do
   end
 
   defp address_card(assigns) do
-    icon_picker_open = Map.get(assigns, :icon_picker_open, nil)
+    assigns = Map.new(assigns)
+    assigns = Map.put_new(assigns, :icon_picker_open, Map.get(assigns, :icon_picker_open, nil))
 
-    icons = [
-      {"red-pin", "<svg width='24' height='24' viewBox='0 0 24 24' fill='red'><circle cx='12' cy='12' r='10'/></svg>"},
-      {"blue-pin", "<svg width='24' height='24' viewBox='0 0 24 24' fill='blue'><circle cx='12' cy='12' r='10'/></svg>"},
-      {"green-pin",
-       "<svg width='24' height='24' viewBox='0 0 24 24' fill='green'><circle cx='12' cy='12' r='10'/></svg>"},
-      {"star",
-       "<svg width='24' height='24' viewBox='0 0 24 24' fill='gold'><polygon points='12,2 15,10 23,10 17,15 19,23 12,18 5,23 7,15 1,10 9,10'/></svg>"},
-      {"flag",
-       "<svg width='24' height='24' viewBox='0 0 24 24'><rect x='4' y='4' width='4' height='16' fill='gray'/><rect x='8' y='4' width='12' height='8' fill='red'/></svg>"}
-    ]
+    assigns =
+      Map.put_new(assigns, :icons, [
+        {"red-pin", "<svg width='24' height='24' viewBox='0 0 24 24' fill='red'><circle cx='12' cy='12' r='10'/></svg>"},
+        {"blue-pin",
+         "<svg width='24' height='24' viewBox='0 0 24 24' fill='blue'><circle cx='12' cy='12' r='10'/></svg>"},
+        {"green-pin",
+         "<svg width='24' height='24' viewBox='0 0 24 24' fill='green'><circle cx='12' cy='12' r='10'/></svg>"},
+        {"star",
+         "<svg width='24' height='24' viewBox='0 0 24 24' fill='gold'><polygon points='12,2 15,10 23,10 17,15 19,23 12,18 5,23 7,15 1,10 9,10'/></svg>"},
+        {"flag",
+         "<svg width='24' height='24' viewBox='0 0 24 24'><rect x='4' y='4' width='4' height='16' fill='gray'/><rect x='8' y='4' width='12' height='8' fill='red'/></svg>"}
+      ])
 
     ~H"""
     <div class="flex items-start justify-between bg-white border border-gray-200 rounded-lg shadow-sm p-5 hover:shadow-md transition-shadow">
@@ -156,9 +169,9 @@ defmodule DeliveryMapWeb.AddressLookupLive do
           >
             Icon
           </button>
-          <%= if icon_picker_open == @index do %>
+          <%= if @icon_picker_open == @index do %>
             <div class="absolute z-10 bg-white border border-gray-300 rounded shadow-md mt-1 p-2 flex gap-2">
-              <%= for {icon_key, svg} <- icons do %>
+              <%= for {icon_key, svg} <- @icons do %>
                 <button
                   type="button"
                   phx-click="change_icon"
