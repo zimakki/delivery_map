@@ -1,60 +1,161 @@
-<div class="address-lookup">
-  <form phx-change="suggest" phx-submit="submit" autocomplete="off">
-    <input
-      type="text"
-      name="query"
-      value={@query}
-      placeholder="Search for an address..."
-      phx-debounce="400"
-      autocomplete="off"
-      class="input"
-    />
-  </form>
-
-  <%= if @suggestions != [] do %>
-    <ul class="suggestions">
-      <%= for suggestion <- @suggestions do %>
-        <li>
-          <button
-            type="button"
-            phx-click="select_address"
-            phx-value-place_id={suggestion.place_id}
-          >
-            {suggestion.description}
-          </button>
-        </li>
-      <% end %>
-    </ul>
-  <% end %>
-
-  <%= if @selected_address do %>
-    <div class="selected-address">
-      <h3>Selected Address:</h3>
-      <ul>
-        <li><strong>Address:</strong> {@selected_address.address}</li>
-        <li><strong>Latitude:</strong> {@selected_address.lat}</li>
-        <li><strong>Longitude:</strong> {@selected_address.lng}</li>
-      </ul>
-    </div>
-  <% end %>
-
+<div>
+  <!-- Map as full-viewport background -->
   <div
     id="map"
     phx-hook="GoogleMap"
     phx-update="ignore"
-    style="height: 400px; width: 100%; margin-top: 1rem;"
-    data-lat={@selected_address && @selected_address.lat}
-    data-lng={@selected_address && @selected_address.lng}
-  ></div>
+    class="fixed inset-0 w-screen h-screen z-0"
+    data-addresses={Jason.encode!(@addresses)}
+    data-selected-lat={@selected_address && @selected_address.lat}
+    data-selected-lng={@selected_address && @selected_address.lng}
+    style="background: #e5e7eb;"
+  >
+    <div class="w-full h-full flex items-center justify-center bg-base-300">
+      <p class="text-base-content/50">Loading map...</p>
+    </div>
+  </div>
+  
+<!-- Overlay panel for controls -->
+  <div class="fixed top-0 left-0 w-full max-w-lg mx-auto p-4 z-10 flex flex-col gap-4 bg-white/90 rounded-b-xl shadow-xl backdrop-blur md:left-8 md:top-8 md:rounded-xl md:w-[400px] md:max-h-[90vh] md:overflow-y-auto">
+    <!-- Search Form -->
+    <form
+      phx-change="suggest"
+      phx-submit="submit"
+      autocomplete="off"
+      class="relative flex items-center"
+    >
+      <input
+        type="text"
+        name="query"
+        value={@query}
+        placeholder="Search for an address..."
+        phx-debounce="400"
+        autocomplete="off"
+        class="input w-full pr-10"
+      />
+      <%= if @query != "" do %>
+        <button
+          type="button"
+          phx-click="clear_query"
+          class="absolute right-2 flex items-center h-full text-gray-400 hover:text-gray-700 focus:outline-none"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      <% end %>
+    </form>
+    
+<!-- Suggestions -->
+    <%= if @suggestions != [] do %>
+      <ul class="suggestions bg-white border border-gray-200 rounded shadow max-h-56 overflow-y-auto divide-y mt-1">
+        <%= for suggestion <- @suggestions do %>
+          <li>
+            <button
+              type="button"
+              phx-click="select_address"
+              phx-value-place_id={suggestion.place_id}
+              class="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 focus:bg-gray-200"
+            >
+              {suggestion.description}
+            </button>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+    
+<!-- Saved Addresses -->
+    <%= if @addresses != [] do %>
+      <div class="bg-gray-50 rounded-lg border border-gray-200 p-4">
+        <h3 class="text-lg font-semibold mb-2">Saved Addresses</h3>
+        <div class="flex flex-col gap-4 max-h-60 overflow-y-auto">
+          <%= for {addr, idx} <- Enum.with_index(@addresses) do %>
+            <div class="flex items-start justify-between bg-white border border-gray-200 rounded-lg shadow-sm p-3 hover:shadow-md transition-shadow">
+              <div class="flex-1 space-y-1 text-base">
+                <%= for {key, value} <- Map.to_list(addr), is_binary(value) or is_number(value) do %>
+                  <div>
+                    <span class="font-bold">{key}:</span> {value}
+                  </div>
+                <% end %>
+              </div>
+              <div class="flex flex-col gap-2 ml-6">
+                <button
+                  type="button"
+                  phx-click="center_address"
+                  phx-value-idx={idx}
+                  title="Center map on this address"
+                  class="px-3 py-1 rounded bg-blue-500 hover:bg-blue-600 text-white font-medium text-sm mb-1"
+                >
+                  Select
+                </button>
+                <a
+                  href={"https://www.google.com/maps/dir/?api=1&destination=" <> to_string(addr.lat) <> "," <> to_string(addr.lng)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Navigate to this address in Google Maps"
+                  class="px-3 py-1 rounded bg-green-500 hover:bg-green-600 text-white font-medium text-sm mb-1 text-center"
+                >
+                  Navigate
+                </a>
+                <div class="relative">
+                  <button
+                    type="button"
+                    class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium text-sm mb-1"
+                    phx-click="toggle_icon_picker"
+                    phx-value-idx={idx}
+                    title="Change icon"
+                  >
+                    Icon
+                  </button>
+                  <%= if @icon_picker_open == idx do %>
+                    <div class="absolute z-20 bg-white border border-gray-300 rounded shadow-md mt-1 p-2 flex gap-2">
+                      <%= for {icon_key, svg} <- [
+          {"red-pin", "<svg width='24' height='24' viewBox='0 0 24 24' fill='red'><circle cx='12' cy='12' r='10'/></svg>"},
+          {"blue-pin", "<svg width='24' height='24' viewBox='0 0 24 24' fill='blue'><circle cx='12' cy='12' r='10'/></svg>"},
+          {"green-pin", "<svg width='24' height='24' viewBox='0 0 24 24' fill='green'><circle cx='12' cy='12' r='10'/></svg>"},
+          {"star", "<svg width='24' height='24' viewBox='0 0 24 24' fill='gold'><polygon points='12,2 15,10 23,10 17,15 19,23 12,18 5,23 7,15 1,10 9,10'/></svg>"},
+          {"flag", "<svg width='24' height='24' viewBox='0 0 24 24'><rect x='4' y='4' width='4' height='16' fill='gray'/><rect x='8' y='4' width='12' height='8' fill='red'/></svg>"}
+        ] do %>
+                        <button
+                          type="button"
+                          phx-click="change_icon"
+                          phx-value-idx={idx}
+                          phx-value-icon={icon_key}
+                          class={"p-1 border-2 rounded " <> if addr.icon == icon_key, do: "border-blue-500", else: "border-transparent"}
+                          title={icon_key}
+                          style="background: none;"
+                        >
+                          {Phoenix.HTML.raw(svg)}
+                        </button>
+                      <% end %>
+                    </div>
+                  <% end %>
+                </div>
+                <button
+                  type="button"
+                  phx-click="delete_address"
+                  phx-value-idx={idx}
+                  title="Remove address"
+                  class="text-red-600 hover:text-red-800 text-2xl font-bold leading-none focus:outline-none"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
 </div>
-
-<style>
-  .address-lookup { max-width: 500px; margin: 2rem auto; }
-  .input { width: 100%; padding: 0.5rem; font-size: 1.1rem; }
-  .suggestions { list-style: none; padding: 0; margin: 0.5rem 0; border: 1px solid #ccc; border-radius: 4px; background: #fff; }
-  .suggestions li { border-bottom: 1px solid #eee; }
-  .suggestions li:last-child { border-bottom: none; }
-  .suggestions button { width: 100%; text-align: left; background: none; border: none; padding: 0.5rem; font-size: 1rem; cursor: pointer; }
-  .suggestions button:hover { background: #f0f0f0; }
-  .selected-address { margin-top: 1.5rem; padding: 1rem; background: #f7f7fa; border-radius: 4px; border: 1px solid #e0e0e0; }
-</style>
