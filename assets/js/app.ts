@@ -29,6 +29,10 @@ import { GoogleMap } from "./google_map";
 const Hooks: { [key: string]: any } = {};
 Hooks.GoogleMap = GoogleMap;
 
+import VoiceSearch from "./voice_search";
+
+Hooks.VoiceSearch = VoiceSearch;
+
 const liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
   params: { _csrf_token: csrfToken },
