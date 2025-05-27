@@ -30,11 +30,18 @@ export const GoogleMap: Partial<GoogleMapHook> = {
   },
   handleMap() {
     const addressesJson = this.el.dataset.addresses;
+    const previewAddressJson = this.el.dataset.previewAddress;
     let addresses = [];
+    let previewAddress = null;
     try {
       addresses = addressesJson ? JSON.parse(addressesJson) : [];
     } catch (e) {
       addresses = [];
+    }
+    try {
+      previewAddress = previewAddressJson ? JSON.parse(previewAddressJson) : null;
+    } catch (e) {
+      previewAddress = null;
     }
 
     if (!window.google || !window.google.maps) {
@@ -43,14 +50,14 @@ export const GoogleMap: Partial<GoogleMapHook> = {
         const script = document.createElement('script');
         script.src = `https://maps.googleapis.com/maps/api/js?key=${(window as any).GOOGLE_MAPS_API_KEY}&libraries=marker`;
         script.async = true;
-        script.onload = () => this.renderMap(addresses);
+        script.onload = () => this.renderMap(addresses, previewAddress);
         document.head.appendChild(script);
       }
       return;
     }
-    this.renderMap(addresses);
+    this.renderMap(addresses, previewAddress);
   },
-  renderMap(addresses) {
+  renderMap(addresses, previewAddress) {
     // Remove old markers
     if (this.markers && Array.isArray(this.markers)) {
       this.markers.forEach(marker => marker.setMap(null));
@@ -122,6 +129,20 @@ export const GoogleMap: Partial<GoogleMapHook> = {
         this.markers.push(marker);
       }
     });
+
+    // Add marker for preview address (if present)
+    if (previewAddress && previewAddress.lat && previewAddress.lng) {
+      let markerOptions: any = {
+        map: this.map,
+        position: { lat: Number(previewAddress.lat), lng: Number(previewAddress.lng) }
+      };
+      // Always use blue-pin for preview
+      const div = document.createElement('div');
+      div.innerHTML = "<svg width='36' height='36' viewBox='0 0 24 24' fill='blue'><circle cx='12' cy='12' r='10'/></svg>";
+      markerOptions.content = div.firstChild;
+      const marker = new window.google.maps.marker.AdvancedMarkerElement(markerOptions);
+      this.markers.push(marker);
+    }
 
     // Center map on selected address if provided
     const selectedLat = this.el.dataset.selectedLat;
