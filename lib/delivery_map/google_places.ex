@@ -26,13 +26,7 @@ defmodule DeliveryMap.GooglePlaces do
 
   def get_address(place_id) do
     fields = "formatted_address,geometry,address_components,name"
-
-    params =
-      URI.encode_query(%{
-        place_id: place_id,
-        key: @key,
-        fields: fields
-      })
+    params = URI.encode_query(%{place_id: place_id, key: @key, fields: fields})
 
     url = "#{@details_url}?#{params}"
 
