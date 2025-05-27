@@ -28,16 +28,7 @@ defmodule DeliveryMapWeb.AddressLookupLive.Components do
       ])
 
     ~H"""
-    <div class="bg-white shadow-xl rounded-xl p-3 w-full relative">
-      <button
-        aria-label="Delete item"
-        phx-click="delete_address"
-        phx-value-idx={@index}
-        class="absolute top-0 right-0 text-gray-400 hover:text-red-600 p-1.5 rounded-full hover:bg-red-50 transition-colors duration-150 ease-in-out z-10"
-      >
-        <.icon name="hero-x-mark-solid" class="h-5 w-5" />
-      </button>
-
+    <div class="bg-white rounded-xl p-3 relative mt-3 mr-3">
       <div class="flex items-start space-x-3 mb-3">
         <div class="flex-shrink-0 pt-1">
           <span class="w-3 h-3 bg-red-500 rounded-full block" aria-hidden="true"></span>
@@ -81,7 +72,7 @@ defmodule DeliveryMapWeb.AddressLookupLive.Components do
         </div>
       </div>
 
-      <div class="absolute left-0 right-0 flex justify-center space-x-2.5 -bottom-5 z-20">
+      <div class="absolute top-2.5 -right-3 flex items-end space-x-2 -translate-y-1/2 z-20">
         <.address_card_action_button
           type="button"
           aria_label="Select"
@@ -89,7 +80,7 @@ defmodule DeliveryMapWeb.AddressLookupLive.Components do
           phx_value_idx={@index}
           icon_name="hero-check-circle-solid"
           icon_class="h-5 w-5"
-          class="text-blue-600 hover:text-blue-700 border border-blue-200 focus:ring-blue-500"
+          class="text-blue-600 hover:text-blue-700 border border-blue-200 focus:ring-blue-500 hover:bg-blue-50 transition-colors duration-150 ease-in-out z-10"
         />
         <.address_card_action_button
           type="a"
@@ -99,7 +90,7 @@ defmodule DeliveryMapWeb.AddressLookupLive.Components do
           rel="noopener noreferrer"
           icon_name="hero-arrow-top-right-on-square-solid"
           icon_class="h-5 w-5 transform -rotate-45"
-          class="text-gray-600 hover:text-gray-800 border border-gray-200 focus:ring-green-500"
+          class="text-green-600 hover:text-gray-800 border border-gray-200 focus:ring-green-500 hover:bg-green-50 transition-colors duration-150 ease-in-out z-10"
         />
         <.address_card_action_button
           type="button"
@@ -108,7 +99,16 @@ defmodule DeliveryMapWeb.AddressLookupLive.Components do
           phx_value_idx={@index}
           icon_name="hero-photo-solid"
           icon_class="h-5 w-5"
-          class="text-gray-600 hover:text-gray-800 border border-gray-200 focus:ring-gray-500"
+          class="text-yellow-700 hover:text-gray-800 border border-gray-200 focus:ring-gray-500 hover:bg-yellow-100 transition-colors duration-150 ease-in-out z-10"
+        />
+        <.address_card_action_button
+          type="button"
+          aria_label="Delete item"
+          phx_click="delete_address"
+          phx_value_idx={@index}
+          icon_name="hero-x-mark-solid"
+          icon_class="h-5 w-5"
+          class="text-gray-400 hover:text-red-600 p-1.5 border border-gray-200 focus:ring-gray-500 rounded-full hover:bg-red-50 transition-colors duration-150 ease-in-out z-10"
         />
         <%= if @icon_picker_open == @index do %>
           <div class="absolute z-10 bg-white border border-gray-300 rounded shadow-md mt-1 p-2 flex gap-2">

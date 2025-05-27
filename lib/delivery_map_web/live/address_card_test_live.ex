@@ -30,6 +30,7 @@ defmodule DeliveryMapWeb.AddressCardTestLive do
   def render(assigns) do
     ~H"""
     <.address_card address={@test_address} index={@index} icon_picker_open={@icon_picker_open} />
+    <.address_card address={@test_address} index={@index} icon_picker_open={@icon_picker_open} />
     """
   end
 
