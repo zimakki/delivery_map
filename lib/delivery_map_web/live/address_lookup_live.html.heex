@@ -94,11 +94,12 @@
       <div class="bg-blue-50 border border-blue-400 rounded-lg p-4 mb-4 flex flex-col gap-2 shadow">
         <h3 class="text-lg font-semibold text-blue-700 mb-2">Preview Address</h3>
         <div class="flex-1 space-y-1 text-base">
-          <%= for {key, value} <- Map.to_list(@preview_address), is_binary(value) or is_number(value) do %>
-            <div>
-              <span class="font-bold">{key}:</span> {value}
-            </div>
-          <% end %>
+          <div>
+            <span class="font-bold">name:</span> {@preview_address[:name] || @preview_address["name"]}
+          </div>
+          <div>
+            <span class="font-bold">address:</span> {@preview_address[:address] || @preview_address["address"]}
+          </div>
         </div>
         <div class="flex items-center gap-3 mt-2">
           <button
