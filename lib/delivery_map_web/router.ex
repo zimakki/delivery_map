@@ -76,6 +76,7 @@ defmodule DeliveryMapWeb.Router do
     )
 
     live "/address-lookup", AddressLookupLive
+    live "/test", AddressCardTestLive
   end
 
   # Other scopes may use custom stacks.

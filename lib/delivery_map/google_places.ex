@@ -4,13 +4,9 @@ defmodule DeliveryMap.GooglePlaces do
   """
   @autocomplete_url "https://maps.googleapis.com/maps/api/place/autocomplete/json"
   @details_url "https://maps.googleapis.com/maps/api/place/details/json"
-  @key Application.compile_env(:delivery_map, :google_maps_api_key) || "YOUR_API_KEY"
 
   def autocomplete(query) do
-    key = Application.get_env(:delivery_map, :google_maps_api_key) || "YOUR_API_KEY"
-
-    params = URI.encode_query(%{input: query, key: key})
-
+    params = URI.encode_query(%{input: query, key: api_key()})
     url = "#{@autocomplete_url}?#{params}"
 
     case Req.get(url) do
@@ -26,11 +22,12 @@ defmodule DeliveryMap.GooglePlaces do
 
   def get_address(place_id) do
     fields = "formatted_address,geometry,address_components,name"
-    params = URI.encode_query(%{place_id: place_id, key: @key, fields: fields})
-
+    params = URI.encode_query(%{place_id: place_id, key: api_key(), fields: fields})
     url = "#{@details_url}?#{params}"
 
-    case Req.get(url) do
+    resp = Req.get(url)
+
+    case resp do
       {:ok,
        %{
          body: %{
@@ -56,8 +53,7 @@ defmodule DeliveryMap.GooglePlaces do
   end
 
   def reverse_geocode(lat, lng) do
-    params = URI.encode_query(%{latlng: "#{lat},#{lng}", key: @key})
-
+    params = URI.encode_query(%{latlng: "#{lat},#{lng}", key: api_key()})
     url = "https://maps.googleapis.com/maps/api/geocode/json?#{params}"
 
     case Req.get(url) do
@@ -109,5 +105,9 @@ defmodule DeliveryMap.GooglePlaces do
         comp["long_name"]
       end
     end)
+  end
+
+  defp api_key do
+    Application.get_env(:delivery_map, :google_maps_api_key) || "YOUR_API_KEY"
   end
 end

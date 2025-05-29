@@ -4,6 +4,8 @@ defmodule DeliveryMapWeb.AddressLookupLive do
   """
   use DeliveryMapWeb, :live_view
 
+  import DeliveryMapWeb.AddressLookupLive.Components
+
   alias DeliveryMap.GooglePlaces
 
   @impl true
@@ -14,7 +16,8 @@ defmodule DeliveryMapWeb.AddressLookupLive do
        suggestions: [],
        addresses: [],
        selected_address: nil,
-       icon_picker_open: nil
+       icon_picker_open: nil,
+       preview_address: nil
      )}
   end
 
@@ -43,18 +46,27 @@ defmodule DeliveryMapWeb.AddressLookupLive do
   end
 
   @impl true
-  def handle_event("select_address", %{"place_id" => place_id}, socket) do
+  def handle_event("select_address", %{"place_id" => place_id} = _params, socket) do
     address = GooglePlaces.get_address(place_id)
-    # Add a default icon to new addresses
-    address = Map.put(address, :icon, "red-pin")
-    addresses = (socket.assigns.addresses || []) ++ [address]
+    address = Map.put(address, :icon, "blue-pin")
 
     {:noreply,
      assign(socket,
+       preview_address: address,
        selected_address: address,
-       addresses: addresses,
        suggestions: [],
        query: address && address.address
+     )}
+  end
+
+  def handle_event("save_preview_address", _params, socket) do
+    preview_address = socket.assigns.preview_address
+    addresses = (socket.assigns.addresses || []) ++ [Map.put(preview_address, :icon, "red-pin")]
+
+    {:noreply,
+     assign(socket,
+       addresses: addresses,
+       preview_address: nil
      )}
   end
 
@@ -98,93 +110,10 @@ defmodule DeliveryMapWeb.AddressLookupLive do
   @impl true
   def handle_event("map_add_address", %{"lat" => lat, "lng" => lng}, socket) do
     # Use reverse geocoding to get the full address map
-    address_map = DeliveryMap.GooglePlaces.reverse_geocode(lat, lng) || %{}
+    address_map = GooglePlaces.reverse_geocode(lat, lng) || %{}
     # Merge in the icon field (and ensure lat/lng are present)
     address = Map.merge(address_map, %{icon: "red-pin", lat: lat, lng: lng})
     addresses = (socket.assigns.addresses || []) ++ [address]
     {:noreply, assign(socket, addresses: addresses)}
-  end
-
-  defp address_card(assigns) do
-    icon_picker_open = Map.get(assigns, :icon_picker_open, nil)
-
-    icons = [
-      {"red-pin", "<svg width='24' height='24' viewBox='0 0 24 24' fill='red'><circle cx='12' cy='12' r='10'/></svg>"},
-      {"blue-pin", "<svg width='24' height='24' viewBox='0 0 24 24' fill='blue'><circle cx='12' cy='12' r='10'/></svg>"},
-      {"green-pin",
-       "<svg width='24' height='24' viewBox='0 0 24 24' fill='green'><circle cx='12' cy='12' r='10'/></svg>"},
-      {"star",
-       "<svg width='24' height='24' viewBox='0 0 24 24' fill='gold'><polygon points='12,2 15,10 23,10 17,15 19,23 12,18 5,23 7,15 1,10 9,10'/></svg>"},
-      {"flag",
-       "<svg width='24' height='24' viewBox='0 0 24 24'><rect x='4' y='4' width='4' height='16' fill='gray'/><rect x='8' y='4' width='12' height='8' fill='red'/></svg>"}
-    ]
-
-    ~H"""
-    <div class="flex items-start justify-between bg-white border border-gray-200 rounded-lg shadow-sm p-5 hover:shadow-md transition-shadow">
-      <div class="flex-1 space-y-1 text-base">
-        <%= for {key, value} <- Map.to_list(@address), is_binary(value) or is_number(value) do %>
-          <div>
-            <span class="font-bold">{key}:</span> {value}
-          </div>
-        <% end %>
-      </div>
-      <div class="flex flex-col gap-2 ml-6">
-        <button
-          type="button"
-          phx-click="center_address"
-          phx-value-idx={@index}
-          title="Center map on this address"
-          class="px-3 py-1 rounded bg-blue-500 hover:bg-blue-600 text-white font-medium text-sm mb-1"
-        >
-          Select
-        </button>
-        <a
-          href={"https://www.google.com/maps/dir/?api=1&destination=" <> to_string(@address.lat) <> "," <> to_string(@address.lng)}
-          target="_blank"
-          rel="noopener noreferrer"
-          title="Navigate to this address in Google Maps"
-          class="px-3 py-1 rounded bg-green-500 hover:bg-green-600 text-white font-medium text-sm mb-1 text-center"
-        >
-          Navigate
-        </a>
-        <div class="relative">
-          <button
-            type="button"
-            class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium text-sm mb-1"
-            phx-click="toggle_icon_picker"
-            phx-value-idx={@index}
-          >
-            Icon
-          </button>
-          <%= if icon_picker_open == @index do %>
-            <div class="absolute z-10 bg-white border border-gray-300 rounded shadow-md mt-1 p-2 flex gap-2">
-              <%= for {icon_key, svg} <- icons do %>
-                <button
-                  type="button"
-                  phx-click="change_icon"
-                  phx-value-idx={@index}
-                  phx-value-icon={icon_key}
-                  class={"p-1 border-2 rounded " <> if @address.icon == icon_key, do: "border-blue-500", else: "border-transparent"}
-                  title={icon_key}
-                  style="background: none;"
-                >
-                  {Phoenix.HTML.raw(svg)}
-                </button>
-              <% end %>
-            </div>
-          <% end %>
-        </div>
-        <button
-          type="button"
-          phx-click="delete_address"
-          phx-value-idx={@index}
-          title="Remove address"
-          class="text-red-600 hover:text-red-800 text-2xl font-bold leading-none focus:outline-none"
-        >
-          ✕
-        </button>
-      </div>
-    </div>
-    """
   end
 end
