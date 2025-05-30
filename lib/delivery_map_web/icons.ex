@@ -26,6 +26,6 @@ defmodule DeliveryMapWeb.Icons do
   Get SVG for a given icon key. Returns nil if not found.
   """
   def svg_for(key) do
-    Enum.find_value(@icons, fn {k, svg} -> if k == key, do: svg, else: nil end)
+    Enum.find_value(@icons, fn {k, svg} -> if k == key, do: svg end)
   end
 end
