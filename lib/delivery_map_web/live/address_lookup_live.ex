@@ -24,31 +24,19 @@ defmodule DeliveryMapWeb.AddressLookupLive do
 
   @impl true
   def handle_event("suggest", %{"query" => query}, socket) do
-    suggestions =
-      if String.length(query) > 2 do
-        GooglePlaces.autocomplete(query)
-      else
-        []
-      end
-
+    suggestions = GooglePlaces.autocomplete(query)
     {:noreply, assign(socket, query: query, suggestions: suggestions)}
   end
 
   @impl true
   def handle_event("submit", %{"query" => query}, socket) do
-    suggestions =
-      if String.length(query) > 2 do
-        GooglePlaces.autocomplete(query)
-      else
-        []
-      end
-
+    suggestions = GooglePlaces.autocomplete(query)
     {:noreply, assign(socket, query: query, suggestions: suggestions)}
   end
 
   @impl true
   def handle_event("select_address", %{"place_id" => place_id} = _params, socket) do
-    icons = socket.assigns.icons || DeliveryMapWeb.Icons.all()
+    icons = socket.assigns.icons
     raw_address = GooglePlaces.get_address(place_id)
     icon = raw_address["icon"] || icons |> List.first() |> elem(0)
     svg = DeliveryMapWeb.Icons.svg_for(icon)
@@ -90,22 +78,17 @@ defmodule DeliveryMapWeb.AddressLookupLive do
         icon_svg: DeliveryMapWeb.Icons.svg_for("red-pin")
     }
 
-    addresses = (socket.assigns.addresses || []) ++ [address]
+    addresses = [address | socket.assigns.addresses]
 
-    {:noreply,
-     assign(socket,
-       addresses: addresses,
-       preview_address: nil
-     )}
+    {:noreply, assign(socket, addresses: addresses, preview_address: nil)}
   end
 
   @impl true
   def handle_event("change_icon", %{"idx" => idx_str, "icon" => icon}, socket) do
     idx = String.to_integer(idx_str)
-    addresses = socket.assigns.addresses
 
     new_addresses =
-      List.update_at(addresses, idx, fn addr ->
+      List.update_at(socket.assigns.addresses, idx, fn addr ->
         %{addr | icon: icon, icon_svg: DeliveryMapWeb.Icons.svg_for(icon)}
       end)
 

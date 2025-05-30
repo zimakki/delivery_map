@@ -5,7 +5,7 @@ defmodule DeliveryMap.GooglePlaces do
   @autocomplete_url "https://maps.googleapis.com/maps/api/place/autocomplete/json"
   @details_url "https://maps.googleapis.com/maps/api/place/details/json"
 
-  def autocomplete(query) do
+  def autocomplete(query) when byte_size(query) > 2 do
     params = URI.encode_query(%{input: query, key: api_key()})
     url = "#{@autocomplete_url}?#{params}"
 
@@ -19,6 +19,8 @@ defmodule DeliveryMap.GooglePlaces do
         []
     end
   end
+
+  def autocomplete(_query), do: []
 
   def get_address(place_id) do
     fields = "formatted_address,geometry,address_components,name"
