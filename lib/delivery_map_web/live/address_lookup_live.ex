@@ -36,12 +36,16 @@ defmodule DeliveryMapWeb.AddressLookupLive do
 
   @impl true
   def handle_event("select_address", %{"place_id" => place_id} = _params, socket) do
-    icons = socket.assigns.icons
     raw_address = GooglePlaces.get_address(place_id)
-    icon = raw_address["icon"] || icons |> List.first() |> elem(0)
-    svg = DeliveryMapWeb.Icons.svg_for(icon)
+    icon = socket.assigns.icons |> List.first() |> elem(0)
 
-    address = DeliveryMap.Address.from_map(Map.merge(raw_address, %{icon: icon, icon_svg: svg}))
+    address =
+      DeliveryMap.Address.from_map(
+        Map.merge(
+          raw_address,
+          %{icon: icon, icon_svg: DeliveryMapWeb.Icons.svg_for(icon)}
+        )
+      )
 
     {:noreply,
      assign(socket,
@@ -53,10 +57,9 @@ defmodule DeliveryMapWeb.AddressLookupLive do
   end
 
   def handle_event("save_preview_address", _params, socket) do
-    preview_address = socket.assigns.preview_address
     # Already a struct, but ensure icon is set to "red-pin" if needed
     address = %{
-      preview_address
+      socket.assigns.preview_address
       | icon: "red-pin",
         icon_svg: DeliveryMapWeb.Icons.svg_for("red-pin")
     }
@@ -97,42 +100,13 @@ defmodule DeliveryMapWeb.AddressLookupLive do
   @impl true
   def handle_event("center_address", %{"idx" => idx_str}, socket) do
     idx = String.to_integer(idx_str)
-    addresses = socket.assigns.addresses || []
-    address = Enum.at(addresses, idx)
-    icons = socket.assigns.icons || DeliveryMapWeb.Icons.all()
-    icon = (address && address.icon) || icons |> List.first() |> elem(0)
-    svg = DeliveryMapWeb.Icons.svg_for(icon)
-    address = %{(address || %{}) | icon: icon, icon_svg: svg}
+
+    address = Enum.at(socket.assigns.addresses, idx)
     {:noreply, assign(socket, selected_address: address)}
   end
 
   @impl true
   def handle_event("clear_query", _params, socket) do
     {:noreply, assign(socket, query: "", suggestions: [])}
-  end
-
-  @impl true
-  def handle_event("map_add_address", %{"lat" => lat, "lng" => lng}, socket) do
-    # Use reverse geocoding to get the full address map
-    address_map = GooglePlaces.reverse_geocode(lat, lng) || %{}
-    icons = socket.assigns.icons || DeliveryMapWeb.Icons.all()
-
-    selected_icon_key =
-      case socket.assigns.selected_address do
-        %{icon: icon} when not is_nil(icon) -> icon
-        _ -> icons |> List.first() |> elem(0)
-      end
-
-    selected_icon_svg = DeliveryMapWeb.Icons.svg_for(selected_icon_key)
-
-    address = DeliveryMap.Address.from_map(Map.merge(address_map, %{
-      lat: address_map[:lat] || lat,
-      lng: address_map[:lng] || lng,
-      icon: selected_icon_key,
-      icon_svg: selected_icon_svg
-    }))
-
-    addresses = (socket.assigns.addresses || []) ++ [address]
-    {:noreply, assign(socket, addresses: addresses)}
   end
 end
