@@ -9,6 +9,10 @@ defmodule DeliveryMapWeb.AddressLookupLive.Components do
   attr :index, :integer, default: 0, doc: "Index of the address in the list"
   attr :icon_picker_open, :boolean, default: false
 
+  attr :selected_icon, :string,
+    default: nil,
+    doc: "SVG icon to display as selected icon. If nil, shows default red circle."
+
   def address_card(assigns) do
     assigns = Map.new(assigns)
     assigns = Map.put_new(assigns, :icon_picker_open, Map.get(assigns, :icon_picker_open, nil))
@@ -31,7 +35,11 @@ defmodule DeliveryMapWeb.AddressLookupLive.Components do
     <div class="bg-white rounded-xl p-3 relative mt-3">
       <div class="flex items-start space-x-3 mb-3">
         <div class="flex-shrink-0 pt-1">
-          <span class="w-3 h-3 bg-red-500 rounded-full block" aria-hidden="true"></span>
+          <%= if @selected_icon do %>
+            {Phoenix.HTML.raw(@selected_icon)}
+          <% else %>
+            <span class="w-3 h-3 bg-red-500 rounded-full block" aria-hidden="true"></span>
+          <% end %>
         </div>
         <div class="flex-1 min-w-0 pr-8">
           <p
