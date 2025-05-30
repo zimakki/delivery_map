@@ -27,38 +27,23 @@ defmodule DeliveryMapWeb.AddressLookupLive.Components do
         <div class="flex-1 min-w-0 pr-8">
           <p
             class="text-sm font-semibold text-gray-900 truncate"
-            title={
-              to_string(
-                Map.get(@address, :name) || Map.get(@address, "name") || Map.get(@address, :address) ||
-                  Map.get(@address, "address") || ""
-              )
-            }
+            title={to_string(@address.name || @address.address || "")}
           >
-            {Map.get(@address, :name) || Map.get(@address, "name") || Map.get(@address, :address) ||
-              Map.get(@address, "address")}
+            {@address.name || @address.address}
           </p>
           <p
             class="text-xs text-gray-500 truncate"
             title={
               to_string(
-                (Map.get(@address, :postcode) || Map.get(@address, "postcode") || "") <>
-                  " " <>
-                  (Map.get(@address, :locality) || Map.get(@address, "locality") || "") <>
-                  ", " <> (Map.get(@address, :country) || Map.get(@address, "country") || "")
+                (@address.postcode || "") <>
+                  " " <> (@address.locality || "") <> ", " <> (@address.country || "")
               )
             }
           >
-            {Map.get(@address, :postcode) || Map.get(@address, "postcode") || ""} {Map.get(
-              @address,
-              :locality
-            ) || Map.get(@address, "locality") || ""}, {Map.get(@address, :country) ||
-              Map.get(@address, "country") || ""}
+            {@address.postcode || ""} {@address.locality || ""}, {@address.country || ""}
           </p>
-          <p
-            class="text-xs text-gray-400 truncate"
-            title={to_string(Map.get(@address, :address) || Map.get(@address, "address") || "")}
-          >
-            {Map.get(@address, :address) || Map.get(@address, "address")}
+          <p class="text-xs text-gray-400 truncate" title={to_string(@address.address || "")}>
+            {@address.address}
           </p>
         </div>
       </div>
