@@ -41,24 +41,7 @@ defmodule DeliveryMapWeb.AddressLookupLive do
     icon = raw_address["icon"] || icons |> List.first() |> elem(0)
     svg = DeliveryMapWeb.Icons.svg_for(icon)
 
-    address = %DeliveryMap.Address{
-      name: raw_address[:name],
-      address: raw_address[:address],
-      lat: raw_address[:lat],
-      lng: raw_address[:lng],
-      icon: icon,
-      icon_svg: svg,
-      place_id: raw_address[:place_id],
-      postcode: raw_address[:postcode],
-      country: raw_address[:country],
-      locality: raw_address[:locality],
-      neighborhood: raw_address[:neighborhood],
-      administrative_area_level_1: raw_address[:administrative_area_level_1],
-      administrative_area_level_2: raw_address[:administrative_area_level_2],
-      sublocality: raw_address[:sublocality],
-      sublocality_level_1: raw_address[:sublocality_level_1],
-      political: raw_address[:political]
-    }
+    address = DeliveryMap.Address.from_map(Map.merge(raw_address, %{icon: icon, icon_svg: svg}))
 
     {:noreply,
      assign(socket,
@@ -142,24 +125,12 @@ defmodule DeliveryMapWeb.AddressLookupLive do
 
     selected_icon_svg = DeliveryMapWeb.Icons.svg_for(selected_icon_key)
 
-    address = %DeliveryMap.Address{
-      name: address_map["name"],
-      address: address_map["address"],
-      lat: address_map["lat"] || lat,
-      lng: address_map["lng"] || lng,
+    address = DeliveryMap.Address.from_map(Map.merge(address_map, %{
+      lat: address_map[:lat] || lat,
+      lng: address_map[:lng] || lng,
       icon: selected_icon_key,
-      icon_svg: selected_icon_svg,
-      place_id: address_map["place_id"],
-      postcode: address_map["postcode"],
-      country: address_map["country"],
-      locality: address_map["locality"],
-      neighborhood: address_map["neighborhood"],
-      administrative_area_level_1: address_map["administrative_area_level_1"],
-      administrative_area_level_2: address_map["administrative_area_level_2"],
-      sublocality: address_map["sublocality"],
-      sublocality_level_1: address_map["sublocality_level_1"],
-      political: address_map["political"]
-    }
+      icon_svg: selected_icon_svg
+    }))
 
     addresses = (socket.assigns.addresses || []) ++ [address]
     {:noreply, assign(socket, addresses: addresses)}

@@ -49,4 +49,27 @@ defmodule DeliveryMap.Address do
     # political area (string)
     :political
   ]
+  @doc """
+  Safely constructs an Address struct from a map with mixed atom/string keys.
+  """
+  def from_map(map) do
+    %__MODULE__{
+      name: map[:name] || map["name"],
+      address: map[:address] || map["address"],
+      lat: map[:lat] || map["lat"],
+      lng: map[:lng] || map["lng"],
+      icon: map[:icon] || map["icon"],
+      icon_svg: map[:icon_svg] || map["icon_svg"],
+      place_id: map[:place_id] || map["place_id"],
+      postcode: map[:postcode] || map["postcode"],
+      country: map[:country] || map["country"],
+      locality: map[:locality] || map["locality"],
+      neighborhood: map[:neighborhood] || map["neighborhood"],
+      administrative_area_level_1: map[:administrative_area_level_1] || map["administrative_area_level_1"],
+      administrative_area_level_2: map[:administrative_area_level_2] || map["administrative_area_level_2"],
+      sublocality: map[:sublocality] || map["sublocality"],
+      sublocality_level_1: map[:sublocality_level_1] || map["sublocality_level_1"],
+      political: map[:political] || map["political"]
+    }
+  end
 end
