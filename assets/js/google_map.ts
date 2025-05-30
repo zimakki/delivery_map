@@ -110,7 +110,11 @@ export const GoogleMap: Partial<GoogleMapHook> = {
           position: { lat: Number(addr.lat), lng: Number(addr.lng) }
         };
         // If icon is a known SVG type, set content to SVG markup
-        if (addr.icon) {
+        if (addr.icon_svg) {
+          const div = document.createElement('div');
+          div.innerHTML = addr.icon_svg;
+          markerOptions.content = div.firstChild;
+        } else if (addr.icon) {
           // Map icon key to SVG string
           const svgMap: Record<string, string> = {
             'red-pin': "<svg width='32' height='32' viewBox='0 0 24 24' fill='red'><circle cx='12' cy='12' r='10'/></svg>",
