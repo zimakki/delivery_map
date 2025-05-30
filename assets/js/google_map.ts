@@ -110,25 +110,9 @@ export const GoogleMap: Partial<GoogleMapHook> = {
           position: { lat: Number(addr.lat), lng: Number(addr.lng) }
         };
         // If icon is a known SVG type, set content to SVG markup
-        if (addr.icon_svg) {
-          const div = document.createElement('div');
-          div.innerHTML = addr.icon_svg;
-          markerOptions.content = div.firstChild;
-        } else if (addr.icon) {
-          // Map icon key to SVG string
-          const svgMap: Record<string, string> = {
-            'red-pin': "<svg width='32' height='32' viewBox='0 0 24 24' fill='red'><circle cx='12' cy='12' r='10'/></svg>",
-            'blue-pin': "<svg width='32' height='32' viewBox='0 0 24 24' fill='blue'><circle cx='12' cy='12' r='10'/></svg>",
-            'green-pin': "<svg width='32' height='32' viewBox='0 0 24 24' fill='green'><circle cx='12' cy='12' r='10'/></svg>",
-            'star': "<svg width='32' height='32' viewBox='0 0 24 24' fill='gold'><polygon points='12,2 15,10 23,10 17,15 19,23 12,18 5,23 7,15 1,10 9,10'/></svg>",
-            'flag': "<svg width='32' height='32' viewBox='0 0 24 24'><rect x='4' y='4' width='4' height='16' fill='gray'/><rect x='8' y='4' width='12' height='8' fill='red'/></svg>"
-          };
-          if (svgMap[addr.icon]) {
-            const div = document.createElement('div');
-            div.innerHTML = svgMap[addr.icon];
-            markerOptions.content = div.firstChild;
-          }
-        }
+        const div = document.createElement('div');
+        div.innerHTML = addr.icon_svg;
+        markerOptions.content = div.firstChild;
         const marker = new window.google.maps.marker.AdvancedMarkerElement(markerOptions);
         this.markers.push(marker);
       }
