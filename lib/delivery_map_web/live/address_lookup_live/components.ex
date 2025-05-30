@@ -87,7 +87,7 @@ defmodule DeliveryMapWeb.AddressLookupLive.Components do
           class="text-gray-400 hover:text-red-600 p-1.5 border border-gray-200 focus:ring-gray-500 rounded-full hover:bg-red-50 transition-colors duration-150 ease-in-out z-10"
         />
         <%= if @icon_picker_open == @index do %>
-          <div class="absolute z-10 bg-white border border-gray-300 rounded shadow-md mt-1 p-2 flex gap-2">
+          <div class="fixed z-50 bg-white border border-gray-300 rounded shadow-md mt-1 p-2 flex gap-2">
             <%= for {icon_key, svg} <- @icons do %>
               <button
                 type="button"
