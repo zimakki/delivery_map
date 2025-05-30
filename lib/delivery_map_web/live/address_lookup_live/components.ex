@@ -8,6 +8,7 @@ defmodule DeliveryMapWeb.AddressLookupLive.Components do
   attr :address, :map, required: true, doc: "The address data to display"
   attr :index, :integer, default: 0, doc: "Index of the address in the list"
   attr :icon_picker_open, :boolean, default: false
+  attr :icons, :list, default: DeliveryMapWeb.Icons.all(), doc: "List of available icons"
 
   attr :selected_icon, :string,
     default: nil,
@@ -17,20 +18,6 @@ defmodule DeliveryMapWeb.AddressLookupLive.Components do
     assigns = Map.new(assigns)
     assigns = Map.put_new(assigns, :icon_picker_open, Map.get(assigns, :icon_picker_open, nil))
 
-    assigns =
-      Map.put_new(assigns, :icons, [
-        {"red-pin",
-         ~s|<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-red-500"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.5-7.5 11.25-7.5 11.25S4.5 18 4.5 10.5a7.5 7.5 0 1115 0z" /></svg>|},
-        {"blue-pin",
-         ~s|<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-blue-500"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.5-7.5 11.25-7.5 11.25S4.5 18 4.5 10.5a7.5 7.5 0 1115 0z" /></svg>|},
-        {"green-pin",
-         ~s|<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-green-500"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.5-7.5 11.25-7.5 11.25S4.5 18 4.5 10.5a7.5 7.5 0 1115 0z" /></svg>|},
-        {"star",
-         ~s|<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-yellow-400"><path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.75.75 0 011.04 0l2.348 4.756 5.254.764a.75.75 0 01.416 1.279l-3.8 3.703.897 5.233a.75.75 0 01-1.088.791L12 17.347l-4.703 2.478a.75.75 0 01-1.088-.79l.897-5.234-3.8-3.703a.75.75 0 01.416-1.28l5.254-.763 2.348-4.756z" /></svg>|},
-        {"flag",
-         ~s|<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-gray-600"><path stroke-linecap="round" stroke-linejoin="round" d="M3 21V5a1 1 0 011-1h13.382a1 1 0 01.894 1.447l-1.382 2.764a1 1 0 000 .894l1.382 2.764A1 1 0 0117.382 13H5a1 1 0 00-1 1v7z" /></svg>|}
-      ])
-
     ~H"""
     <div class="bg-white rounded-xl p-3 relative mt-3">
       <div class="flex items-start space-x-3 mb-3">
@@ -39,6 +26,7 @@ defmodule DeliveryMapWeb.AddressLookupLive.Components do
             {Phoenix.HTML.raw(@selected_icon)}
           <% else %>
             <span class="w-3 h-3 bg-red-500 rounded-full block" aria-hidden="true"></span>
+            <%= List.first(@icons) |> Enum.at(1) %>
           <% end %>
         </div>
         <div class="flex-1 min-w-0 pr-8">

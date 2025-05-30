@@ -18,18 +18,7 @@ defmodule DeliveryMapWeb.AddressLookupLive do
        selected_address: nil,
        icon_picker_open: nil,
        preview_address: nil,
-       icons: [
-         {"red-pin",
-          ~s|<svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\" class=\"w-6 h-6 text-red-500\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M15 10.5a3 3 0 11-6 0 3 3 0 016 0z\" /><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M19.5 10.5c0 7.5-7.5 11.25-7.5 11.25S4.5 18 4.5 10.5a7.5 7.5 0 1115 0z\" /></svg>|},
-         {"blue-pin",
-          ~s|<svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\" class=\"w-6 h-6 text-blue-500\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M15 10.5a3 3 0 11-6 0 3 3 0 016 0z\" /><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M19.5 10.5c0 7.5-7.5 11.25-7.5 11.25S4.5 18 4.5 10.5a7.5 7.5 0 1115 0z\" /></svg>|},
-         {"green-pin",
-          ~s|<svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\" class=\"w-6 h-6 text-green-500\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M15 10.5a3 3 0 11-6 0 3 3 0 016 0z\" /><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M19.5 10.5c0 7.5-7.5 11.25-7.5 11.25S4.5 18 4.5 10.5a7.5 7.5 0 1115 0z\" /></svg>|},
-         {"star",
-          ~s|<svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\" class=\"w-6 h-6 text-yellow-400\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M11.48 3.499a.75.75 0 011.04 0l2.348 4.756 5.254.764a.75.75 0 01.416 1.279l-3.8 3.703.897 5.233a.75.75 0 01-1.088.791L12 17.347l-4.703 2.478a.75.75 0 01-1.088-.79l.897-5.234-3.8-3.703a.75.75 0 01.416-1.28l5.254-.763 2.348-4.756z\" /></svg>|},
-         {"flag",
-          ~s|<svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\" class=\"w-6 h-6 text-gray-600\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M3 21V5a1 1 0 011-1h13.382a1 1 0 01.894 1.447l-1.382 2.764a1 1 0 000 .894l1.382 2.764A1 1 0 0117.382 13H5a1 1 0 00-1 1v7z\" /></svg>|}
-       ]
+       icons: DeliveryMapWeb.Icons.all()
      )}
   end
 
@@ -59,8 +48,11 @@ defmodule DeliveryMapWeb.AddressLookupLive do
 
   @impl true
   def handle_event("select_address", %{"place_id" => place_id} = _params, socket) do
+    icons = socket.assigns.icons || DeliveryMapWeb.Icons.all()
     address = GooglePlaces.get_address(place_id)
-    address = Map.put(address, :icon, "blue-pin")
+    icon = Map.get(address, :icon) || Map.get(address, "icon") || (icons |> List.first() |> elem(0))
+    svg = DeliveryMapWeb.Icons.svg_for(icon)
+    address = address |> Map.put(:icon, icon) |> Map.put(:icon_svg, svg)
 
     {:noreply,
      assign(socket,
@@ -122,6 +114,11 @@ defmodule DeliveryMapWeb.AddressLookupLive do
     idx = String.to_integer(idx_str)
     addresses = socket.assigns.addresses || []
     address = Enum.at(addresses, idx)
+    # Ensure selected_address always has :icon and :icon_svg
+    icons = socket.assigns.icons || DeliveryMapWeb.Icons.all()
+    icon = Map.get(address || %{}, :icon) || Map.get(address || %{}, "icon") || (icons |> List.first() |> elem(0))
+    svg = DeliveryMapWeb.Icons.svg_for(icon)
+    address = (address || %{}) |> Map.put(:icon, icon) |> Map.put(:icon_svg, svg)
     {:noreply, assign(socket, selected_address: address)}
   end
 
@@ -135,7 +132,15 @@ defmodule DeliveryMapWeb.AddressLookupLive do
     # Use reverse geocoding to get the full address map
     address_map = GooglePlaces.reverse_geocode(lat, lng) || %{}
     # Merge in the icon field (and ensure lat/lng are present)
-    address = Map.merge(address_map, %{icon: "red-pin", lat: lat, lng: lng})
+    # Use the selected icon or default to the first available
+    icons = socket.assigns.icons || DeliveryMapWeb.Icons.all()
+    selected_icon_key =
+      case socket.assigns.selected_address do
+        %{icon: icon} when not is_nil(icon) -> icon
+        _ -> icons |> List.first() |> elem(0)
+      end
+    selected_icon_svg = DeliveryMapWeb.Icons.svg_for(selected_icon_key)
+    address = Map.merge(address_map, %{icon: selected_icon_key, icon_svg: selected_icon_svg, lat: lat, lng: lng})
     addresses = (socket.assigns.addresses || []) ++ [address]
     {:noreply, assign(socket, addresses: addresses)}
   end
