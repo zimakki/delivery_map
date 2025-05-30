@@ -49,6 +49,7 @@ defmodule DeliveryMap.Address do
     # political area (string)
     :political
   ]
+
   @doc """
   Safely constructs an Address struct from a map with mixed atom/string keys.
   """
