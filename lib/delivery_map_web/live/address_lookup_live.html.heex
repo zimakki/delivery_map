@@ -126,11 +126,7 @@
               address={addr}
               index={idx}
               icon_picker_open={@icon_picker_open}
-              selected_icon={
-                Enum.find_value(@icons, fn {k, svg} ->
-                  if (Map.get(addr, :icon) || Map.get(addr, "icon")) == k, do: svg, else: nil
-                end)
-              }
+              selected_icon={Enum.find_value(@icons, fn {k, svg} -> Map.get(addr, :icon) == k end)}
             />
           <% end %>
         </div>

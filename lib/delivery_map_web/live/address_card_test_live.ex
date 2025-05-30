@@ -30,15 +30,7 @@ defmodule DeliveryMapWeb.AddressCardTestLive do
 
   @impl true
   def render(assigns) do
-    # Ensure selected_icon is always set to the SVG for the test_address's icon if not present
-    selected_icon =
-      assigns[:selected_icon] ||
-        (
-          icon_key = Map.get(assigns.test_address, :icon) || Map.get(assigns.test_address, "icon")
-
-          Enum.find_value(assigns.icons, fn {k, svg} -> if k == icon_key, do: svg end)
-        )
-
+    selected_icon = assigns[:selected_icon]
     assigns = Map.put(assigns, :selected_icon, selected_icon)
 
     ~H"""

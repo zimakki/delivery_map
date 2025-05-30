@@ -11,7 +11,7 @@ defmodule DeliveryMapWeb.AddressLookupLive.Components do
   attr :icons, :list, default: DeliveryMapWeb.Icons.all(), doc: "List of available icons"
 
   attr :selected_icon, :string,
-    default: nil,
+    required: true,
     doc: "SVG icon to display as selected icon. If nil, shows default red circle."
 
   def address_card(assigns) do
@@ -22,12 +22,7 @@ defmodule DeliveryMapWeb.AddressLookupLive.Components do
     <div class="bg-white rounded-xl p-3 relative mt-3">
       <div class="flex items-start space-x-3 mb-3">
         <div class="flex-shrink-0 pt-1">
-          <%= if @selected_icon do %>
-            {Phoenix.HTML.raw(@selected_icon)}
-          <% else %>
-            <span class="w-3 h-3 bg-red-500 rounded-full block" aria-hidden="true"></span>
-            <%= List.first(@icons) |> Enum.at(1) %>
-          <% end %>
+          {Phoenix.HTML.raw(@selected_icon)}
         </div>
         <div class="flex-1 min-w-0 pr-8">
           <p
