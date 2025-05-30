@@ -100,9 +100,10 @@ defmodule DeliveryMapWeb.AddressLookupLive do
   @impl true
   def handle_event("center_address", %{"idx" => idx_str}, socket) do
     idx = String.to_integer(idx_str)
-
     address = Enum.at(socket.assigns.addresses, idx)
-    {:noreply, assign(socket, selected_address: address)}
+    lat = address.lat
+    lng = address.lng
+    {:noreply, push_event(socket, "center_map", %{lat: lat, lng: lng})}
   end
 
   @impl true

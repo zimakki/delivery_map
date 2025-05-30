@@ -91,6 +91,13 @@ export const GoogleMap: Partial<GoogleMapHook> = {
     }
     // On update, do NOT change center or zoom
 
+    // Listen for LiveView push_event to center map
+    this.handleEvent && this.handleEvent("center_map", ({ lat, lng }) => {
+      if (this.map && lat && lng) {
+        this.map.setCenter({ lat: Number(lat), lng: Number(lng) });
+      }
+    });
+
     // Add markers for all addresses
     addresses.forEach((addr) => {
       if (addr.lat && addr.lng) {
